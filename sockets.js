@@ -26,7 +26,7 @@ io.set('authorization', function (hsData, accept) {
         return accept('Error retrieving session!', false);
       }
       hsData.stendby = {
-        user: 'oisu',
+        user: {username:'oisu'},
         room: /\/rooms\/(?:([^\/]+?))\/?$/g.exec(hsData.headers.referer)[1]
       };
 

@@ -14,12 +14,7 @@ var app = module.parent.exports.app
 
 app.get('/', function(req, res, next) {
 //  if(req.isAuthenticated()){
-debugger;
-    client.hset(
-        'users:' + 'oisu',
-	'name', 'oisu'
-    );
-    res.redirect('/rooms/list');
+	res.redirect('/rooms/list');
 //    } else{
 //      res.render('index');
 //    }
@@ -75,8 +70,7 @@ app.get('/rooms/:id', utils.restrict, function(req, res) {
   utils.getRoomInfo(req, res, client, function(room) {
     utils.getUsersInRoom(req, res, client, room, function(users) {
       utils.getPublicRoomsInfo(client, function(rooms) {
-        utils.getUserStatus(req.body.user_name, client, function(status) {
-//        utils.getUserStatus(req.user.username, client, function(status) {
+        utils.getUserStatus(req, client, function(status) {
           utils.enterRoom(req, res, client, room, users, rooms, status);
         });
       });
