@@ -20,15 +20,13 @@ io.set('authorization', function (hsData, accept) {
   if(hsData.headers.cookie) {
     var cookies = parseCookies(cookie.parse(hsData.headers.cookie), config.session.secret)
       , sid = cookies['stendby'];
-debugger;
+    hsData.sid = sid;
     sessionStore.load(sid, function(err, session) {
       if(err || !session) {
-debugger;
         return accept('Error retrieving session!', false);
       }
-
       hsData.stendby = {
-        user: session.passport.user,
+        user: 'oisu',
         room: /\/rooms\/(?:([^\/]+?))\/?$/g.exec(hsData.headers.referer)[1]
       };
 
