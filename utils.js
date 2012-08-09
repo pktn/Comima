@@ -62,7 +62,7 @@ exports.createRoom = function(req, res, client, roomKey) {
 	// save
   client.hmset('rooms:' + roomKey + ':info', room, function(err, ok) {
     if(!err && ok) {
-      client.sadd('stendby:public:rooms', roomKey);
+      client.sadd('comima:public:rooms', roomKey);
 			// store username
 			req.session.username = req.body.username;
       res.redirect('/rooms/' + roomKey);
@@ -85,7 +85,7 @@ exports.getRoomInfo = function(req, res, client, fn) {
 };
 
 exports.getPublicRoomsInfo = function(client, fn) {
-  client.smembers('stendby:public:rooms', function(err, publicRooms) {
+  client.smembers('comima:public:rooms', function(err, publicRooms) {
     var rooms = []
       , len = publicRooms.length;
     if(!len) fn([]);
@@ -140,7 +140,7 @@ exports.getUsersInRoom = function(req, res, client, room, fn) {
  */
 
 exports.getPublicRooms = function(client, fn){
-  client.smembers("stendby:public:rooms", function(err, rooms) {
+  client.smembers("comima:public:rooms", function(err, rooms) {
     if (!err && rooms) fn(rooms);
     else fn([]);
   });

@@ -20,13 +20,13 @@ var io = sio.listen(server);
 io.set('authorization', function (hsData, accept) {
   if(hsData.headers.cookie) {
     var cookies = parseCookies(cookie.parse(hsData.headers.cookie), config.session.secret)
-      , sid = cookies['stendby'];
+      , sid = cookies['comima'];
     hsData.sid = sid;
     sessionStore.load(sid, function(err, session) {
       if(err || !session) {
         return accept('Error retrieving session!', false);
       }
-      hsData.stendby = {
+      hsData.comima = {
         user: {username:session.username},
         room: /\/rooms\/(?:([^\/]+?))\/?$/g.exec(hsData.headers.referer)[1]
       };
@@ -48,8 +48,8 @@ io.configure(function() {
 
 io.sockets.on('connection', function (socket) {
   var hs = socket.handshake
-    , nickname = hs.stendby.user.username
-    , room_id = hs.stendby.room
+    , nickname = hs.comima.user.username
+    , room_id = hs.comima.room
     , now = new Date()
     // Chat Log handler
     , chatlogFileName = './chats/' + room_id + (now.getFullYear()) + (now.getMonth() + 1) + (now.getDate()) + ".txt"
