@@ -177,7 +177,7 @@ exports.enterRoom = function(req, res, client, room, users, rooms, status){
  * Get Cominy User Info
  */
 
-exports.getCominyUserInfo = function(req, res, fn){
+exports.getCominyUserInfo = function(req, res, next){
 	var cookieArray = req.headers.cookie.split(';');
 	for(var i = 0; i < cookieArray.length; i++){
 		if( cookieArray[i].indexOf('cominy_login') !== -1){
@@ -185,6 +185,7 @@ exports.getCominyUserInfo = function(req, res, fn){
 			logger.info(str[1]);
 		}
 	}
+	next();
 };
 
 /*
