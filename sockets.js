@@ -95,6 +95,12 @@ io.sockets.on('connection', function (socket) {
     }   
   });
 
+	socket.on('my matching', function(data) {
+		client.sadd('comima:public:matchings', matching_id);
+		client.smembers('comima:matchings:' + data.matching_id, data);
+	});
+
+
   socket.on('set status', function(data) {
     var status = data.status;
 
