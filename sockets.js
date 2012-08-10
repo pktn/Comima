@@ -16,6 +16,7 @@ var parent = module.parent.exports
   , fs = require('fs');
 
 var io = sio.listen(server);
+
 io.set('authorization', function (hsData, accept) {
   if(hsData.headers.cookie) {
     var cookies = parseCookies(cookie.parse(hsData.headers.cookie), config.session.secret)
@@ -26,7 +27,7 @@ io.set('authorization', function (hsData, accept) {
         return accept('Error retrieving session!', false);
       }
       hsData.stendby = {
-        user: {username:'oisu'},
+        user: {username:session.username},
         room: /\/rooms\/(?:([^\/]+?))\/?$/g.exec(hsData.headers.referer)[1]
       };
 
@@ -53,6 +54,8 @@ io.sockets.on('connection', function (socket) {
     // Chat Log handler
     , chatlogFileName = './chats/' + room_id + (now.getFullYear()) + (now.getMonth() + 1) + (now.getDate()) + ".txt"
     , chatlogWriteStream = fs.createWriteStream(chatlogFileName, {'flags': 'a'});
+
+	logger.info('New connection from ' + hs.address.address + ":" + hs.address.port + ' username:' + nickname);
 
   socket.join(room_id);
 

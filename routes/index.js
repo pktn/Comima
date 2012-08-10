@@ -4,7 +4,7 @@
  */
 
 var app = module.parent.exports.app
-//  , passport = require('passport')
+  , passport = require('passport')
   , client = module.parent.exports.client
   , utils = require('../utils');
 
@@ -13,31 +13,13 @@ var app = module.parent.exports.app
  */
 
 app.get('/', function(req, res, next) {
-//  if(req.isAuthenticated()){
-	res.redirect('/rooms/list');
-//    } else{
-//      res.render('index');
-//    }
+	if(req.isAuthenticated()){
+//	if(true){
+		res.redirect('/rooms/list');
+	} else{
+		res.render('index');
+	}
 });
-
-
-/*
- * Authentication routes
- */
-/*
-app.get('/auth/twitter', passport.authenticate('twitter'));
-
-app.get('/auth/twitter/callback', 
-  passport.authenticate('twitter', { failureRedirect: '/' }),
-  function(req, res) {
-    res.redirect('/');
-});
-
-app.get('/logout', function(req, res){
-  req.logout();
-  res.redirect('/');
-});
-*/
 
 
 /*
@@ -67,6 +49,8 @@ app.post('/create', utils.restrict, function(req, res) {
  */
 
 app.get('/rooms/:id', utils.restrict, function(req, res) {
+	var username = req.session.username || 'guest-' + Math.floor( Math.random() * 1000000 );
+	req.session.username = username;
   utils.getRoomInfo(req, res, client, function(room) {
     utils.getUsersInRoom(req, res, client, room, function(users) {
       utils.getPublicRoomsInfo(client, function(rooms) {

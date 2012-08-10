@@ -2,20 +2,32 @@
  * Module dependencies
  */
 
-var express = require('express')
-  , http = require('http')
-  , redis = require('redis')
-//  , passport = require('passport')
-  , config = require('./config.json')
-  , RedisStore = require('connect-redis')(express)
-  , sessionStore = exports.sessionStore = new RedisStore(config.redis)
-  , init = require('./init');
+var express				= require('express')
+  , http					= require('http')
+  , redis					= require('redis')
+	, passport			= require('passport')
+  , config				= require('./config.json')
+  , RedisStore		= require('connect-redis')(express)
+  , sessionStore	= exports.sessionStore = new RedisStore(config.redis)
+  , winston				= require('winston')
+  , init					= require('./init');
 
 /*
  * Instantiate redis
  */
 
 var client = exports.client  = redis.createClient();
+
+/*
+ * Logger
+ */
+
+logger = new (winston.Logger)({
+	transports: [
+		new (winston.transports.Console)(),
+		new (winston.transports.File)({ filename:'logs/info.log'})
+	]
+});
 
 /*
  * Clean db and create folder
@@ -49,13 +61,13 @@ app.configure(function() {
     store: sessionStore,
     cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }
   }));
-/*
+
   app.use(passport.initialize());
   app.use(passport.session());
-*/
 
   app.use(app.router);
 });
+
 
 // development
 app.configure('development', function(){
@@ -78,7 +90,7 @@ require('./routes');
  */
 
 exports.server = http.createServer(app).listen(app.get('port'), function() {
-  console.log('server stendby on port %d', app.get('port'));
+  logger.info('server running on port ' + app.get('port'));
 });
 
 /*
@@ -93,5 +105,5 @@ require('./sockets');
  */
 
 process.on('uncaughtException', function(err){
-  console.log('Exception: ' + err.stack);
+  logger.error('Exception: ' + err.stack);
 });

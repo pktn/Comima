@@ -63,14 +63,14 @@ exports.createRoom = function(req, res, client, roomKey) {
   client.hmset('rooms:' + roomKey + ':info', room, function(err, ok) {
     if(!err && ok) {
       client.sadd('stendby:public:rooms', roomKey);
+			// store username
+			req.session.username = req.body.username;
       res.redirect('/rooms/' + roomKey);
     } else {
       res.send(500);
     }
   });
 
-	// store username
-	req.session.username = req.body.username;
 };
 
 /*
@@ -150,10 +150,7 @@ exports.getPublicRooms = function(client, fn){
  */
 
 exports.getUserStatus = function(req, client, fn){
-	//TODO
-	var username = req.body.username || 'guest' + Math.floor( Math.random() * 100 );
-	req.session.username = username;
-  client.get('users:' + username + ':status', function(err, status) {
+  client.get('users:' + req.session.username + ':status', function(err, status) {
     if (!err && status) fn(status);
     else fn('available');
   });
