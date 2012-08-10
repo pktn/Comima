@@ -2,6 +2,8 @@
 .emacs
 .zshrc
 *.log
+*.txt
 *.swp
 chats/*
 dump.rdb
+package.json
