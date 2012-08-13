@@ -14,7 +14,7 @@
   },
 	"cominysession" : {
 		"filepath" : "/mnt/win/cominy/session"
-	}
+	},
   "app": {
     "port": 6789
   },
