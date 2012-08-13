@@ -14,7 +14,6 @@ var app = module.parent.exports.app
 
 app.get('/', function(req, res, next) {
 	if(req.isAuthenticated()){
-//	if(true){
 		res.redirect('/rooms/list');
 	} else{
 		res.render('index');
@@ -51,14 +50,17 @@ app.post('/create', utils.restrict, function(req, res) {
 app.get('/rooms/:id', utils.restrict, function(req, res) {
 	var username = req.session.username || 'guest-' + Math.floor( Math.random() * 1000000 );
 	req.session.username = username;
-  utils.getRoomInfo(req, res, client, function(room) {
-    utils.getUsersInRoom(req, res, client, room, function(users) {
-      utils.getPublicRoomsInfo(client, function(rooms) {
-        utils.getUserStatus(req, client, function(status) {
-          utils.enterRoom(req, res, client, room, users, rooms, status);
-        });
-      });
-    });
-  });
+
+	utils.getCominyUserInfo(req, res, function() {
+		utils.getRoomInfo(req, res, client, function(room) {
+			utils.getUsersInRoom(req, res, client, room, function(users) {
+				utils.getPublicRoomsInfo(client, function(rooms) {
+					utils.getUserStatus(req, client, function(status) {
+						utils.enterRoom(req, res, client, room, users, rooms, status);
+					});
+				});
+			});
+		});
+	});
 });
 
