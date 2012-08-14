@@ -7,7 +7,7 @@ block content
 			include status_dropdown
 			include rooms_dropdown
 			a.button-circle.thread.fancybox(href='#thread')
-				strong
+			strong
 					span
 						i
 			#thread.modal.modal-thread(style='display: none')
@@ -23,6 +23,8 @@ block content
 				strong
 					span
 						i
+		sidebar
+			include matching_list
 		sidebar
 			include chat_list
 			include files_list

@@ -31,9 +31,14 @@ $(function() {
   });
   
   $(".fancybox").fancybox({'margin': 0, 'padding': 0});
-  
+
   //Socket.io
   var socket = io.connect();
+
+  $(".invite-people").click(function(){
+    $(this).hide().after('<p class="inviting-people">Inviting peple, please wait.</p>').delay(2000).hide().after('something');
+		socket.emit('my msg', {msg: 'oisu'});
+  });
 
   socket.on('error', function (reason){
     console.error('Unable to connect Socket.IO', reason);
