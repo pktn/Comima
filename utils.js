@@ -1,3 +1,4 @@
+var config = require('./config.json');
 
 /*
  * Restrict paths
@@ -62,7 +63,7 @@ exports.createRoom = function(req, res, client, roomKey) {
 	// save
   client.hmset('rooms:' + roomKey + ':info', room, function(err, ok) {
     if(!err && ok) {
-      client.sadd('stendby:public:rooms', roomKey);
+      client.sadd('comima:public:rooms', roomKey);
 			// store username
 			req.session.username = req.body.username;
       res.redirect('/rooms/' + roomKey);
@@ -85,7 +86,7 @@ exports.getRoomInfo = function(req, res, client, fn) {
 };
 
 exports.getPublicRoomsInfo = function(client, fn) {
-  client.smembers('stendby:public:rooms', function(err, publicRooms) {
+  client.smembers('comima:public:rooms', function(err, publicRooms) {
     var rooms = []
       , len = publicRooms.length;
     if(!len) fn([]);
@@ -140,7 +141,7 @@ exports.getUsersInRoom = function(req, res, client, room, fn) {
  */
 
 exports.getPublicRooms = function(client, fn){
-  client.smembers("stendby:public:rooms", function(err, rooms) {
+  client.smembers("comima:public:rooms", function(err, rooms) {
     if (!err && rooms) fn(rooms);
     else fn([]);
   });
@@ -177,14 +178,47 @@ exports.enterRoom = function(req, res, client, room, users, rooms, status){
  * Get Cominy User Info
  */
 
-exports.getCominyUserInfo = function(req, res, fn){
+exports.getCominyUserInfo = function(req, res, next){
 	var cookieArray = req.headers.cookie.split(';');
+
 	for(var i = 0; i < cookieArray.length; i++){
-		if( cookieArray[i].indexOf('cominy_login') !== -1){
-			var str = cookieArray[i].split('=');
-			logger.info(str[1]);
+		if( cookieArray[i].indexOf(config.cominy.cookiekey) !== -1){
+			var sid = cookieArray[i].split('=')[1];
+
+			// Fetch Cominy Session File
+			var xmlrpc = require('xmlrpc');
+			var fs = require('fs');
+
+			fs.readFile(config.cominy.sessionfilepath + sid, function(err, data){
+  			if(err) {
+					logger.error("Could not open file: " + err);
+					process.exit(1);
+				}
+				var uid_str = data.toString().split('|')[2];
+				var uid = uid_str.match(/s:6:"(\d+)"/)[1];
+
+				// Waits briefly to give the XML-RPC server time to start up and start
+				// listening
+				setTimeout(function () {
+
+					// Creates an XML-RPC client. Passes the host information on where to
+					// make the XML-RPC calls.
+					var param = {};
+					param.target_c_member_id = param.my_c_member_id = uid;
+					var client = xmlrpc.createClient(config.cominy.rpcclient);
+
+					// Sends a method call to the XML-RPC server
+   				client.methodCall(config.cominy.rpcmethod, [param], function (error, value) {
+						// Results of the method response
+						if (value.image_url) {
+							logger.info(value.image_url);
+						}
+		  		})
+				}, 1000)
+			});
 		}
 	}
+	next();
 };
 
 /*
@@ -201,4 +235,16 @@ exports.caseInsensitiveSort = function (a, b) {
    if(a < b) ret = -1; 
 
    return ret;
+};
+
+/*
+ * Dump Object
+ */
+
+exports.dumpObject = function (o) {
+	var str = "";
+	for(var i in o) {
+		str = str + "\n" + i + "\t"+ o[i];
+	}
+	logger.debug(str);
 };

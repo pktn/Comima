@@ -32,10 +32,6 @@ $(function() {
   
   $(".fancybox").fancybox({'margin': 0, 'padding': 0});
   
-  $(".invite-people").click(function(){
-    $(this).hide().after('<p class="inviting-people">Inviting peple, please wait.</p>').delay(2000).hide().after('something');
-  });
-
   //Socket.io
   var socket = io.connect();
 
@@ -47,6 +43,9 @@ $(function() {
     console.info('successfully established a working connection');
     if($('.chat .chat-box').length == 0) {
       socket.emit('history request');
+    }
+    if($('.thread .thread-box').length == 0) {
+      socket.emit('thread history request');
     }
   });
 
@@ -68,12 +67,40 @@ $(function() {
         lastInputUser = $lastInput.data('user');
 
         if($lastInput.hasClass('chat-box') && lastInputUser === chatBoxData.nickname) {
-          $lastInput.append(parseChatBoxMsg(ich.chat_box_text(chatBoxData)));
+          $lastInput.append(parseBoxMsg(ich.chat_box_text(chatBoxData)));
         } else {
-          $('.chat .history').append(parseChatBox(ich.chat_box(chatBoxData)));
+          $('.chat .history').append(parseBox(ich.chat_box(chatBoxData)));
         }
 
         $('.chat').scrollTop($('.chat').prop('scrollHeight'));
+      });
+    }
+  });
+
+  socket.on('thread history response', function(data) {
+    if(data.history && data.history.length) {
+      var $lastInput
+        , lastInputUser;
+
+      data.history.forEach(function(historyLine) {
+        var time = new Date(historyLine.atTime)
+          , threadBoxData = {
+              nickname: historyLine.from,
+              msg: historyLine.withData,
+              type: 'history',
+              time: timeParser(time)
+            };
+
+        $lastInput = $('.thread .history').children().last();
+        lastInputUser = $lastInput.data('user');
+
+        if($lastInput.hasClass('thread-box') && lastInputUser === threadBoxData.nickname) {
+          $lastInput.append(parseBoxMsg(ich.thread_box_text(threadBoxData)));
+        } else {
+          $('.thread .history').append(parseBox(ich.thread_box(threadBoxData)));
+        }
+
+        $('.thread').scrollTop($('.thread').prop('scrollHeight'));
       });
     }
   });
@@ -164,12 +191,36 @@ $(function() {
     data.time = timeParser(time)
 
     if($lastInput.hasClass('chat-box') && lastInputUser === data.nickname) {
-      $lastInput.append(parseChatBoxMsg(ich.chat_box_text(data)));
+      $lastInput.append(parseBoxMsg(ich.chat_box_text(data)));
     } else {
-      $('.chat .current').append(parseChatBox(ich.chat_box(data)));
+      $('.chat .current').append(parseBox(ich.chat_box(data)));
     }
 
     $('.chat').scrollTop($('.chat').prop('scrollHeight'));
+    
+    //update title if window is hidden
+    if(windowStatus == "hidden") {
+      afkDeliveredMessages +=1;
+      updateTitle();
+    }
+
+  });
+
+  socket.on('new thread', function(data) {
+    var time = new Date(),
+        $lastInput = $('.thread .current').children().last(),
+        lastInputUser = $lastInput.data('user');
+
+    data.type = 'thread';
+    data.time = timeParser(time)
+
+    if($lastInput.hasClass('thread-box') && lastInputUser === data.nickname) {
+      $lastInput.append(parseBoxMsg(ich.thread_box_text(data)));
+    } else {
+      $('.thread .current').append(parseBox(ich.thread_box(data)));
+    }
+
+    $('.thread').scrollTop($('.thread').prop('scrollHeight'));
     
     //update title if window is hidden
     if(windowStatus == "hidden") {
@@ -226,7 +277,6 @@ $(function() {
     if(e.which == 13 && inputText) {
       var chunks = inputText.match(/.{1,1024}/g)
         , len = chunks.length;
-
       for(var i = 0; i<len; i++) {
         socket.emit('my msg', {
           msg: chunks[i]
@@ -238,6 +288,31 @@ $(function() {
       return false;
     }
   });
+
+  $(".post-thread").click(function(e){
+    $(this).hide().after('<p class="posting-thread">しばらくおまちください</p>').delay(2000).hide();
+		// TODO
+		$('.posting-thread').hide();
+		$('.post-thread').show();
+		$('.fancybox-close').click();
+	console.log(e.from);	
+	console.log(e.nickname);	
+    var inputText = $('.thread-detail input').val().trim();
+    if(inputText) {
+      var chunks = inputText.match(/.{1,1024}/g)
+        , len = chunks.length;
+      for(var i = 0; i<len; i++) {
+        socket.emit('my thread', {
+					nickname: $('#username').text(),
+          detail: chunks[i]
+        });
+      }
+      $('.thread-detail').val('');
+
+      return false;
+    }
+  });
+
 
   $('.dropdown-status .list a.status').click(function(e) {
     socket.emit('set status', {
@@ -264,15 +339,15 @@ $(function() {
       .replace(/(@)([a-zA-Z0-9_]+)/g, "<a href=\"http://twitter.com/$2\" target=\"_blank\">$1$2</a>");
   };
 
-  var parseChatBox = function(chatBox) {
-    var chatBoxMsg = chatBox.find('p');
-    parseChatBoxMsg(chatBoxMsg);
-    return chatBox;
+  var parseBox = function(box) {
+    var boxMsg = box.find('p');
+    parseBoxMsg(boxMsg);
+    return box;
   };
 
-  var parseChatBoxMsg = function(chatBoxMsg) {
-    var msg = chatBoxMsg.html();
-    return chatBoxMsg.html(textParser(msg));
+  var parseBoxMsg = function(boxMsg) {
+    var msg = boxMsg.html();
+    return boxMsg.html(textParser(msg));
   };
 
   var patterns = {

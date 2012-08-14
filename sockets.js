@@ -20,13 +20,13 @@ var io = sio.listen(server);
 io.set('authorization', function (hsData, accept) {
   if(hsData.headers.cookie) {
     var cookies = parseCookies(cookie.parse(hsData.headers.cookie), config.session.secret)
-      , sid = cookies['stendby'];
+      , sid = cookies['comima'];
     hsData.sid = sid;
     sessionStore.load(sid, function(err, session) {
       if(err || !session) {
         return accept('Error retrieving session!', false);
       }
-      hsData.stendby = {
+      hsData.comima = {
         user: {username:session.username},
         room: /\/rooms\/(?:([^\/]+?))\/?$/g.exec(hsData.headers.referer)[1]
       };
@@ -48,12 +48,15 @@ io.configure(function() {
 
 io.sockets.on('connection', function (socket) {
   var hs = socket.handshake
-    , nickname = hs.stendby.user.username
-    , room_id = hs.stendby.room
+    , nickname = hs.comima.user.username
+    , room_id = hs.comima.room
     , now = new Date()
     // Chat Log handler
     , chatlogFileName = './chats/' + room_id + (now.getFullYear()) + (now.getMonth() + 1) + (now.getDate()) + ".txt"
-    , chatlogWriteStream = fs.createWriteStream(chatlogFileName, {'flags': 'a'});
+    , chatlogWriteStream = fs.createWriteStream(chatlogFileName, {'flags': 'a'})
+    // Thread Log handler
+    , threadlogFileName = './threads/' + room_id + (now.getFullYear()) + (now.getMonth() + 1) + (now.getDate()) + ".txt"
+    , threadlogWriteStream = fs.createWriteStream(threadlogFileName, {'flags': 'a'});
 
 	logger.info('New connection from ' + hs.address.address + ":" + hs.address.port + ' username:' + nickname);
 
@@ -87,10 +90,28 @@ io.sockets.on('connection', function (socket) {
       }
 
       chatlogWriteStream.write(JSON.stringify(chatlogRegistry) + "\n");
-      
       io.sockets.in(room_id).emit('new msg', {
         nickname: nickname,
         msg: data.msg
+      });        
+    }   
+  });
+
+  socket.on('my thread', function(data) {
+    var no_empty = data.detail.replace("\n","");
+    if(no_empty.length > 0) {
+      var threadlogRegistry = {
+        type: 'message',
+        from: nickname,
+        atTime: new Date(),
+        withData: data.detail
+      }
+
+      threadlogWriteStream.write(JSON.stringify(threadlogRegistry) + "\n");
+      
+      io.sockets.in(room_id).emit('new thread', {
+        nickname: data.nickname,
+        detail: data.detail
       });        
     }   
   });

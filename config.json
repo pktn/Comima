@@ -12,8 +12,15 @@
   "session" : {
     "secret" : "yourbestsecret"
   },
-	"cominysession" : {
-		"filepath" : "/mnt/win/cominy/session"
+	"cominy" : {
+		"rpcclient" : {
+			"host" : "localhost",
+			"port" : 8080,
+			"path" : "/?m=api&a=do_xmlrpc"
+		},
+		"cookiekey" : "cominy_login",
+		"sessionfilepath" : "/mnt/win/cominy/session/sess_",
+		"rpcmethod" : "001_get_c_member" 
 	},
   "app": {
     "port": 6789

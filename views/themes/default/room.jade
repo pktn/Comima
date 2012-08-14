@@ -6,31 +6,19 @@ block content
 		header
 			include status_dropdown
 			include rooms_dropdown
-			a.button-circle.invite.fancybox(href='#invite', style="display:none;")
+			a.button-circle.thread.fancybox(href='#thread')
 				strong
 					span
 						i
-			#invite.modal.modal-invite(style='display: none')
-				h2 Invite people to join the room
+			#thread.modal.modal-thread(style='display: none')
+				h2 スレッド新規作成
 					.modal-content
-						p Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-					.tweet-user
-						input.(type='text', name='', value='')
-					.tweet-user
-						input.(type='text', name='', value='')
-					.tweet-user
-						input.error(type='text', name='', value='')
-					.tweet-user
-						input.(type='text', name='', value='')
-					.tweet-user
-						input.(type='text', name='', value='')
-					.tweet-user
-						input.(type='text', name='', value='')
-				// .modal-content 
+						ほげほげ
+					.thread-detail
+						input(type='text', name='', value='')
 					.modal-footer
-						a.button.invite-people(href='#') Invite these people
-				// .modal-footers 
-					// #invite 
+						a.button.post-thread(href='#') スレッドを立てる
+
 			a.button-circle.lock(href='#', style="display:none;")
 				strong
 					span
@@ -40,6 +28,17 @@ block content
 			include files_list
   
 		.content(role='main')
+			.thread
+				// thread-content
+				.history
+					//historical submits
+				.current
+					//current submits
+			// .thread 
+
+			.line-thread
+			.line-thread.second
+
 			.chat
 				// chat-content
 				.history
@@ -61,6 +60,7 @@ block content
 	span#username(style="display:none")= user.nickname
 
 	include templates/chat_tmpl
+	include templates/thread_tmpl
 
 	script(defer, src="/js/libs/fancy-box/jquery.fancybox.pack.js")
 	script(defer, src="/js/plugins.js")
