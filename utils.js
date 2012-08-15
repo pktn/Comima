@@ -75,17 +75,74 @@ exports.createRoom = function(req, res, client, roomKey) {
 };
 
 /*
+ * Get Cominy User Info
+ */
+
+exports.getCominyUserInfo = function(req, res, next){
+logger.info("+++ getCominyUserInfo +++");
+	var cookieArray = req.headers.cookie.split(';');
+
+	for(var i = 0; i < cookieArray.length; i++){
+		if( cookieArray[i].indexOf(config.cominy.cookiekey) !== -1){
+			var sid = cookieArray[i].split('=')[1];
+		}
+	}
+	if (sid) {
+		// Fetch Cominy Session File
+		var xmlrpc = require('xmlrpc');
+		var fs = require('fs');
+
+		fs.readFile(config.cominy.sessionfilepath + sid, function(err, data){
+  		if(err) {
+				logger.error("Could not open file: " + err);
+				process.exit(1);
+			}
+			var uid_str = data.toString().split('|')[2];
+			var uid = uid_str.match(/s:6:"(\d+)"/)[1];
+
+			// Waits briefly to give the XML-RPC server time to start up and start
+			// listening
+			setTimeout(function () {
+
+				// Creates an XML-RPC client. Passes the host information on where to
+				// make the XML-RPC calls.
+				var param = {};
+				param.target_c_member_id = param.my_c_member_id = uid;
+				var client = xmlrpc.createClient(config.cominy.rpcclient);
+
+				// Sends a method call to the XML-RPC server
+	   		client.methodCall(config.cominy.rpcmethod, [param], function (error, value) {
+					// Results of the method response
+					// Store image_url
+					req.session.image_url = value.image_url;
+					next();
+	  		})
+			}, 1000)
+		});
+	} else {
+		// TODO
+		if (!req.session.image_url) {
+			req.session.image_url = config.guest.image_url;
+		}
+		next();
+	}
+};
+
+/*
  * Get Room Info
  */
 
 exports.getRoomInfo = function(req, res, client, fn) { 
+logger.info("+++ getRoomInfo start +++");
   client.hgetall('rooms:' + req.params.id + ':info', function(err, room) {
     if(!err && room && Object.keys(room).length) fn(room);
     else res.redirect('back');
   });
+logger.info("+++ getRoomInfo end +++");
 };
 
 exports.getPublicRoomsInfo = function(client, fn) {
+logger.info("+++ getPublicRoomsInfo start +++");
   client.smembers('comima:public:rooms', function(err, publicRooms) {
     var rooms = []
       , len = publicRooms.length;
@@ -113,12 +170,14 @@ exports.getPublicRoomsInfo = function(client, fn) {
       });
     });
   });
+logger.info("+++ getPublicRoomsInfo end +++");
 };
 /*
  * Get connected users at room
  */
 
 exports.getUsersInRoom = function(req, res, client, room, fn) {
+logger.info("+++ getUserInRoom start +++");
   client.smembers('rooms:' + req.params.id + ':online', function(err, online_users) {
     var users = [];
 
@@ -134,6 +193,7 @@ exports.getUsersInRoom = function(req, res, client, room, fn) {
     fn(users);
 
   });
+logger.info("+++ getUserInRoom end +++");
 };
 
 /*
@@ -141,20 +201,24 @@ exports.getUsersInRoom = function(req, res, client, room, fn) {
  */
 
 exports.getPublicRooms = function(client, fn){
+logger.info("+++ getPublicRooms start +++");
   client.smembers("comima:public:rooms", function(err, rooms) {
     if (!err && rooms) fn(rooms);
     else fn([]);
   });
+logger.info("+++ getPublicRooms end +++");
 };
 /*
  * Get User status
  */
 
 exports.getUserStatus = function(req, client, fn){
+logger.info("+++ getUserStatus start +++");
   client.get('users:' + req.session.username + ':status', function(err, status) {
     if (!err && status) fn(status);
     else fn('available');
   });
+logger.info("+++ getUserStatus end +++");
 };
 
 /*
@@ -162,64 +226,21 @@ exports.getUserStatus = function(req, client, fn){
  */
 
 exports.enterRoom = function(req, res, client, room, users, rooms, status){
+logger.info("+++ enterRoom start +++");
   res.locals({
     room: room,
     rooms: rooms,
     user: {
       nickname: req.session.username,
-      status: status
+      status: status,
+			image_url: req.session.image_url
     },
     users_list: users
   });
   res.render('room');
+logger.info("+++ enterRoom end +++");
 };
 
-/*
- * Get Cominy User Info
- */
-
-exports.getCominyUserInfo = function(req, res, next){
-	var cookieArray = req.headers.cookie.split(';');
-
-	for(var i = 0; i < cookieArray.length; i++){
-		if( cookieArray[i].indexOf(config.cominy.cookiekey) !== -1){
-			var sid = cookieArray[i].split('=')[1];
-
-			// Fetch Cominy Session File
-			var xmlrpc = require('xmlrpc');
-			var fs = require('fs');
-
-			fs.readFile(config.cominy.sessionfilepath + sid, function(err, data){
-  			if(err) {
-					logger.error("Could not open file: " + err);
-					process.exit(1);
-				}
-				var uid_str = data.toString().split('|')[2];
-				var uid = uid_str.match(/s:6:"(\d+)"/)[1];
-
-				// Waits briefly to give the XML-RPC server time to start up and start
-				// listening
-				setTimeout(function () {
-
-					// Creates an XML-RPC client. Passes the host information on where to
-					// make the XML-RPC calls.
-					var param = {};
-					param.target_c_member_id = param.my_c_member_id = uid;
-					var client = xmlrpc.createClient(config.cominy.rpcclient);
-
-					// Sends a method call to the XML-RPC server
-   				client.methodCall(config.cominy.rpcmethod, [param], function (error, value) {
-						// Results of the method response
-						if (value.image_url) {
-							logger.info(value.image_url);
-						}
-		  		})
-				}, 1000)
-			});
-		}
-	}
-	next();
-};
 
 /*
  * Sort Case Insensitive

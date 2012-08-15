@@ -20,7 +20,6 @@ app.get('/', function(req, res, next) {
 	}
 });
 
-
 /*
  * Rooms list
  */

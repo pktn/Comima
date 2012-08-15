@@ -300,8 +300,7 @@ $(function() {
 		$('.posting-thread').hide();
 		$('.post-thread').show();
 		$('.fancybox-close').click();
-	console.log(e.from);	
-	console.log(e.nickname);	
+
     var inputText = $('.thread-detail input').val().trim();
     if(inputText) {
       var chunks = inputText.match(/.{1,1024}/g)

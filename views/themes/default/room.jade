@@ -4,12 +4,10 @@ block content
 	.color-line
 	.wrap
 		header
-			include status_dropdown
+			include user_box
 			include rooms_dropdown
-			a.button-circle.thread.fancybox(href='#thread')
-			strong
-					span
-						i
+
+			// post thread form
 			#thread.modal.modal-thread(style='display: none')
 				h2 スレッド新規作成
 					.modal-content
@@ -20,41 +18,49 @@ block content
 						a.button.post-thread(href='#') スレッドを立てる
 
 			a.button-circle.lock(href='#', style="display:none;")
-				strong
-					span
-						i
-		sidebar
-			include matching_list
-		sidebar
-			include chat_list
-			include files_list
-  
+
 		.content(role='main')
-			.thread
-				// thread-content
-				.history
-					//historical submits
-				.current
-					//current submits
-			// .thread 
+			#left-column
+				#thread-list
+					h2 募集スレッド
+					.post-thread
+						a.button-circle.thread.fancybox(href='#thread')
+						スレッド新規作成
+					// .post-thread
+					.thread
+						// thread-content
+						.history
+							//historical submits
+						.current
+							//current submits
+					// .thread 
 
-			.line-thread
-			.line-thread.second
+					.line-thread
+					.line-thread.second
 
-			.chat
-				// chat-content
-				.history
-					//historical submits
-				.current
-					//current submits
-			// .chat 
+				// #thread-list
 
-			.line-chat
-			.line-chat.second
+				#online-user-list
+					h2 閲覧中のみんな
 
-			.chat-input
-				input.text(type='text', name='', value='')
+					include online_user_list
+				// #online-user-list
+			// #left-column
+
+
+			#right-column
+				h2 みんなとチャット
+				.chat
+					// chat-content
+					.history
+						//historical submits
+					.current
+						//current submits
+				// .chat
+				.chat-input
+					input.text(type='text', name='', value='')
 				// .chat-input
+			// #right-column
 
 	// .wrap
 

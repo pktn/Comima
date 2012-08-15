@@ -1,0 +1,28 @@
+- var fullStatus = ['available', 'away', 'busy']
+- var current;
+#user-box
+	.user-img
+		img(src='#{user.image_url}')
+	.user-nickname
+		a(class='nickname', href='#') #{user.nickname} さん
+	.user-logout
+		a(class='option logout', href='/logout') ログアウト
+	.dropdown.dropdown-status
+		i
+		a.selected(class='#{user.status}', href='#')
+			b
+			| #{user.status}
+		.dropdown-options
+			.triangle
+			.list
+				- fullStatus.forEach(function(status) {
+					- if (status == user.status)
+						- current = 'current'
+					- else
+						- current = ''
+					a(class='option status #{status} #{current}', data-status='#{status}', href='#')
+						b
+						| #{status}
+					
+				- })
+// #user-box		
