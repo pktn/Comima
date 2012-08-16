@@ -4,9 +4,9 @@
  */
 
 var app = module.parent.exports.app
-  , passport = require('passport')
   , client = module.parent.exports.client
   , utils = require('../utils');
+
 
 /*
  * Homepage

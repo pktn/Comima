@@ -13,6 +13,7 @@ var parent = module.parent.exports
   , parseCookies = require('connect').utils.parseSignedCookies
   , cookie = require('cookie')
   , config = require('./config.json')
+	, common = require('./common')
   , fs = require('fs');
 
 var io = sio.listen(server);
@@ -27,10 +28,9 @@ io.set('authorization', function (hsData, accept) {
         return accept('Error retrieving session!', false);
       }
       hsData.comima = {
-        user: {username:session.username},
+        user: {username:session.username, image_url:session.image_url},
         room: /\/rooms\/(?:([^\/]+?))\/?$/g.exec(hsData.headers.referer)[1]
       };
-
       return accept(null, true);
       
     });
@@ -50,15 +50,16 @@ io.sockets.on('connection', function (socket) {
   var hs = socket.handshake
     , nickname = hs.comima.user.username
     , room_id = hs.comima.room
-    , now = new Date()
-    // Chat Log handler
-    , chatlogFileName = './chats/' + room_id + (now.getFullYear()) + (now.getMonth() + 1) + (now.getDate()) + ".txt"
+    , chatlogFileName = './chats/' + room_id + '_' + common.getLogFilePath()
     , chatlogWriteStream = fs.createWriteStream(chatlogFileName, {'flags': 'a'})
-    // Thread Log handler
-    , threadlogFileName = './threads/' + room_id + (now.getFullYear()) + (now.getMonth() + 1) + (now.getDate()) + ".txt"
+    , threadlogFileName = './threads/' + room_id + '_' + common.getLogFilePath()
     , threadlogWriteStream = fs.createWriteStream(threadlogFileName, {'flags': 'a'});
 
-	logger.info('New connection from ' + hs.address.address + ":" + hs.address.port + ' username:' + nickname);
+	logger.info(
+		'New connection from '
+		+ hs.address.address + ":" + hs.address.port
+		+ ' username:' + nickname
+	);
 
   socket.join(room_id);
 
@@ -67,11 +68,11 @@ io.sockets.on('connection', function (socket) {
       client.sadd('socketio:sockets', socket.id);
       client.sadd('rooms:' + room_id + ':online', nickname, function(err, userAdded) {
         if(userAdded) {
-          client.hincrby('rooms:' + room_id + ':info', 'online', 1);
-          client.get('users:' + nickname + ':status', function(err, status) {
-            io.sockets.in(room_id).emit('new user', {
-              nickname: nickname,
-              status: status || 'available'
+					client.hincrby('rooms:' + room_id + ':info', 'online', 1);
+					client.get('users:' + nickname + ':status', function(err, status) {
+    	      io.sockets.in(room_id).emit('new user', {
+      	      nickname: nickname,
+        	    status: status || 'available'
             });
           });
         }
@@ -92,6 +93,7 @@ io.sockets.on('connection', function (socket) {
       chatlogWriteStream.write(JSON.stringify(chatlogRegistry) + "\n");
       io.sockets.in(room_id).emit('new msg', {
         nickname: nickname,
+				image_url: data.image_url,
         msg: data.msg
       });        
     }   
@@ -118,7 +120,6 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('set status', function(data) {
     var status = data.status;
-
     client.set('users:' + nickname + ':status', status, function(err, statusSet) {
       io.sockets.emit('user-info update', {
         username: nickname,
@@ -127,7 +128,7 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
-  socket.on('history request', function() {
+  socket.on('chat history request', function() {
     var history = [];
     var tail = require('child_process').spawn('tail', ['-n', 5, chatlogFileName]);
     tail.stdout.on('data', function (data) {
@@ -140,7 +141,26 @@ io.sockets.on('connection', function (socket) {
         }
       });
 
-      socket.emit('history response', {
+      socket.emit('chat history response', {
+        history: history
+      });
+    });
+  });
+
+  socket.on('thread history request', function() {
+    var history = [];
+    var tail = require('child_process').spawn('tail', ['-n', 5, threadlogFileName]);
+    tail.stdout.on('data', function (data) {
+      var lines = data.toString('utf-8').split("\n");
+      
+      lines.forEach(function(line, index) {
+        if(line.length) {
+          var historyLine = JSON.parse(line);
+          history.push(historyLine);
+        }
+      });
+
+      socket.emit('thread history response', {
         history: history
       });
     });

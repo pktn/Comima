@@ -1,10 +1,11 @@
 .online
-	h4.inner-padding ONLINE
+	.online-header
+		b オンライン
 	.people
 		-users_list.forEach(function(user) {
-			a(class='#{ user.status }', href='#', data-username='#{ user.username }')
-				b
-				= user.username
+			.user-img
+				a(class='#{ user.status }', href='#', data-username='#{ user.nickname }')
+					img(src='#{user.image_url}')
 		-});
 	// .people 
 // .online 

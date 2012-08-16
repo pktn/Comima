@@ -1,4 +1,5 @@
-var config = require('./config.json');
+var config = require('./config.json')
+	, common = require('./common');
 
 /*
  * Restrict paths
@@ -82,6 +83,7 @@ exports.getCominyUserInfo = function(req, res, next){
 logger.info("+++ getCominyUserInfo +++");
 	var cookieArray = req.headers.cookie.split(';');
 
+logger.info(cookieArray);
 	for(var i = 0; i < cookieArray.length; i++){
 		if( cookieArray[i].indexOf(config.cominy.cookiekey) !== -1){
 			var sid = cookieArray[i].split('=')[1];
@@ -108,10 +110,10 @@ logger.info("+++ getCominyUserInfo +++");
 				// make the XML-RPC calls.
 				var param = {};
 				param.target_c_member_id = param.my_c_member_id = uid;
-				var client = xmlrpc.createClient(config.cominy.rpcclient);
+				var rpcclient = xmlrpc.createClient(config.cominy.rpcclient);
 
 				// Sends a method call to the XML-RPC server
-	   		client.methodCall(config.cominy.rpcmethod, [param], function (error, value) {
+	   		rpcclient.methodCall(config.cominy.rpcmethod, [param], function (error, value) {
 					// Results of the method response
 					// Store image_url
 					req.session.image_url = value.image_url;
@@ -172,6 +174,7 @@ logger.info("+++ getPublicRoomsInfo start +++");
   });
 logger.info("+++ getPublicRoomsInfo end +++");
 };
+
 /*
  * Get connected users at room
  */
@@ -182,16 +185,16 @@ logger.info("+++ getUserInRoom start +++");
     var users = [];
 
     online_users.forEach(function(username, index) {
-      client.get('users:' + username + ':status', function(err, status) {
+			client.get('users:' + username + ':status', function(err, status) {
         users.push({
             username: username
+					,	image_url: req.session.image_url
           , status: status || 'available'
         });
       });
     });
 
     fn(users);
-
   });
 logger.info("+++ getUserInRoom end +++");
 };
@@ -208,13 +211,14 @@ logger.info("+++ getPublicRooms start +++");
   });
 logger.info("+++ getPublicRooms end +++");
 };
+
 /*
  * Get User status
  */
 
 exports.getUserStatus = function(req, client, fn){
 logger.info("+++ getUserStatus start +++");
-  client.get('users:' + req.session.username + ':status', function(err, status) {
+	client.get('users:' + req.session.username + ':status', function(err, status) {
     if (!err && status) fn(status);
     else fn('available');
   });
@@ -232,8 +236,8 @@ logger.info("+++ enterRoom start +++");
     rooms: rooms,
     user: {
       nickname: req.session.username,
-      status: status,
-			image_url: req.session.image_url
+			image_url: req.session.image_url,
+      status: status
     },
     users_list: users
   });
@@ -258,14 +262,4 @@ exports.caseInsensitiveSort = function (a, b) {
    return ret;
 };
 
-/*
- * Dump Object
- */
 
-exports.dumpObject = function (o) {
-	var str = "";
-	for(var i in o) {
-		str = str + "\n" + i + "\t"+ o[i];
-	}
-	logger.debug(str);
-};

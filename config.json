@@ -26,8 +26,13 @@
     "port": 6789
   },
   "redis": {
-    "prefix" : "session:",
-    "db" : 1
+		"session" : {
+	    "prefix" : "session:",
+  	  "db" : 1
+		},
+		"common" : {
+			"db" : 0
+		}
   },
 	"guest": {
 		"image_url" : "../img/icon-guest-user.png"

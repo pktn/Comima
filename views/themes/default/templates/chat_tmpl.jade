@@ -1,7 +1,7 @@
 script#chat_box(type='text/html')
   .chat-box(data-user='{{ nickname }}', data-type='{{ type }}')
     .avatar
-      img(src='http://dic.nicovideo.jp/oekaki/252311.png')
+      img(src='{{ image_url }}')
     h5
       | {{ nickname }}
     {{> chat_box_text }}

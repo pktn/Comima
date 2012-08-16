@@ -35,11 +35,6 @@ $(function() {
   //Socket.io
   var socket = io.connect();
 
-  $(".invite-people").click(function(){
-    $(this).hide().after('<p class="inviting-people">Inviting peple, please wait.</p>').delay(2000).hide().after('something');
-		socket.emit('my msg', {msg: 'oisu'});
-  });
-
   socket.on('error', function (reason){
     console.error('Unable to connect Socket.IO', reason);
   });
@@ -47,14 +42,14 @@ $(function() {
   socket.on('connect', function (){
     console.info('successfully established a working connection');
     if($('.chat .chat-box').length == 0) {
-      socket.emit('history request');
+      socket.emit('chat history request');
     }
     if($('.thread .thread-box').length == 0) {
       socket.emit('thread history request');
     }
   });
 
-  socket.on('history response', function(data) {
+  socket.on('chat history response', function(data) {
     if(data.history && data.history.length) {
       var $lastInput
         , lastInputUser;
@@ -111,7 +106,7 @@ $(function() {
   });
 
   socket.on('new user', function(data) {
-    var message = "$username has joined the room.";
+    var message = "$username さんがオンラインになりました。";
 
     //If user is not 'there'
     if(!$('.people a[data-username="' + data.nickname + '"]').length) {
@@ -146,7 +141,7 @@ $(function() {
   });
 
   socket.on('user-info update', function(data) {
-    var message = "$username is now $status.";
+    var message = "$username は $status です。";
 
     // Update dropdown
     if(data.username === $('#username').text()) {
@@ -191,7 +186,6 @@ $(function() {
     var time = new Date(),
         $lastInput = $('.chat .current').children().last(),
         lastInputUser = $lastInput.data('user');
-
     data.type = 'chat';
     data.time = timeParser(time)
 
@@ -237,7 +231,7 @@ $(function() {
 
   socket.on('user leave', function(data) {
     var nickname = $('#username').text()
-      , message = "$username has left the room.";
+      , message = "$username さんが退出しました。";
     
     for (var username in USERS) {
       if(username === data.nickname && username != nickname) {
@@ -284,10 +278,10 @@ $(function() {
         , len = chunks.length;
       for(var i = 0; i<len; i++) {
         socket.emit('my msg', {
+					image_url: $('#image_url').text(),
           msg: chunks[i]
         });
       }
-
       $(this).val('');
 
       return false;

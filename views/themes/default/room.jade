@@ -4,8 +4,9 @@ block content
 	.color-line
 	.wrap
 		header
-			include user_box
+			.room-title #{room.name} の集会所
 			include rooms_dropdown
+			include user_box
 
 			// post thread form
 			#thread.modal.modal-thread(style='display: none')
@@ -66,6 +67,7 @@ block content
 
 	span#room_name(style="display:none")= room.name
 	span#username(style="display:none")= user.nickname
+	span#image_url(style="display:none")= user.image_url
 
 	include templates/chat_tmpl
 	include templates/thread_tmpl

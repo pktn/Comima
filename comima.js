@@ -5,11 +5,11 @@
 var express				= require('express')
   , http					= require('http')
   , redis					= require('redis')
-	, passport			= require('passport')
   , config				= require('./config.json')
   , RedisStore		= require('connect-redis')(express)
-  , sessionStore	= exports.sessionStore = new RedisStore(config.redis)
+  , sessionStore	= exports.sessionStore = new RedisStore(config.redis.session)
   , winston				= require('winston')
+	, common				= require('./common')
   , init					= require('./init');
 
 /*
@@ -24,8 +24,12 @@ var client = exports.client  = redis.createClient();
 
 logger = new (winston.Logger)({
 	transports: [
-		new (winston.transports.Console)(),
-		new (winston.transports.File)({ filename:'logs/info.log'})
+		new (winston.transports.Console)({
+			colorize:true, level:'silly'
+		}),
+		new (winston.transports.File)({
+			timestamp: common.getDate, filename:'logs/app.log' 
+		})
 	]
 });
 
@@ -34,12 +38,6 @@ logger = new (winston.Logger)({
  */
 
 init(client);
-
-/*
- * Passportjs auth strategy
- */
-
-require('./strategy');
 
 /*
  * Create and config server
@@ -61,9 +59,6 @@ app.configure(function() {
     store: sessionStore,
     cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }
   }));
-
-  app.use(passport.initialize());
-  app.use(passport.session());
 
   app.use(app.router);
 });
@@ -107,4 +102,5 @@ require('./sockets');
 process.on('uncaughtException', function(err){
   logger.error('Exception: ' + err.stack);
 });
+
 
