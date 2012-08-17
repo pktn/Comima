@@ -1,7 +1,7 @@
 script#thread_box(type='text/html')
   .thread-box(data-user='{{ nickname }}', data-type='{{ type }}')
     .avatar
-      img(src='#{user.image_url}')
+      img(src='{{ image_url }}')
     h5
       | {{ nickname }}
     {{> thread_box_text }}

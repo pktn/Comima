@@ -9,12 +9,13 @@ var parent = module.parent.exports
   , express = require('express')
   , client = parent.client
   , sessionStore = parent.sessionStore
+	, utils = parent.utils
   , sio = require('socket.io')
   , parseCookies = require('connect').utils.parseSignedCookies
   , cookie = require('cookie')
   , config = require('./config.json')
-	, common = require('./common')
-  , fs = require('fs');
+  , fs = require('fs')
+	;
 
 var io = sio.listen(server);
 
@@ -28,7 +29,11 @@ io.set('authorization', function (hsData, accept) {
         return accept('Error retrieving session!', false);
       }
       hsData.comima = {
-        user: {username:session.username, image_url:session.image_url},
+        user: {
+						user_id: session.user_id
+					, nickname: session.nickname
+					, image_url: session.image_url
+				},
         room: /\/rooms\/(?:([^\/]+?))\/?$/g.exec(hsData.headers.referer)[1]
       };
       return accept(null, true);
@@ -48,31 +53,34 @@ io.configure(function() {
 
 io.sockets.on('connection', function (socket) {
   var hs = socket.handshake
-    , nickname = hs.comima.user.username
+    , nickname = hs.comima.user.nickname
+    , user_id = hs.comima.user.user_id
     , room_id = hs.comima.room
-    , chatlogFileName = './chats/' + room_id + '_' + common.getLogFilePath()
+    , chatlogFileName = './chats/' + room_id + '_' + utils.getLogFilePath()
     , chatlogWriteStream = fs.createWriteStream(chatlogFileName, {'flags': 'a'})
-    , threadlogFileName = './threads/' + room_id + '_' + common.getLogFilePath()
+    , threadlogFileName = './threads/' + room_id + '_' + utils.getLogFilePath()
     , threadlogWriteStream = fs.createWriteStream(threadlogFileName, {'flags': 'a'});
 
-	logger.info(
+	log.info(
 		'New connection from '
 		+ hs.address.address + ":" + hs.address.port
-		+ ' username:' + nickname
+		+ ' user_id:' + user_id
+		+ ' nickname:' + nickname
 	);
 
   socket.join(room_id);
 
-  client.sadd('users:' + nickname + ':sockets', socket.id, function(err, socketAdded) {
+  client.sadd('users:' + user_id + ':sockets', socket.id, function(err, socketAdded) {
     if(socketAdded) {
       client.sadd('socketio:sockets', socket.id);
-      client.sadd('rooms:' + room_id + ':online', nickname, function(err, userAdded) {
+      client.sadd('rooms:' + room_id + ':online', user_id, function(err, userAdded) {
         if(userAdded) {
 					client.hincrby('rooms:' + room_id + ':info', 'online', 1);
-					client.get('users:' + nickname + ':status', function(err, status) {
+					client.get('users:' + user_id + ':status', function(err, status) {
     	      io.sockets.in(room_id).emit('new user', {
-      	      nickname: nickname,
-        	    status: status || 'available'
+							 user_id: user_id
+      	     , nickname: nickname
+        	   , status: status || 'available'
             });
           });
         }
@@ -86,12 +94,14 @@ io.sockets.on('connection', function (socket) {
       var chatlogRegistry = {
         type: 'message',
         from: nickname,
+				fromUserId: user_id,
         atTime: new Date(),
         withData: data.msg
       }
 
       chatlogWriteStream.write(JSON.stringify(chatlogRegistry) + "\n");
       io.sockets.in(room_id).emit('new msg', {
+				user_id: user_id,
         nickname: nickname,
 				image_url: data.image_url,
         msg: data.msg
@@ -105,14 +115,16 @@ io.sockets.on('connection', function (socket) {
       var threadlogRegistry = {
         type: 'message',
         from: nickname,
+				fromUserId: user_id,
         atTime: new Date(),
         withData: data.detail
       }
-
       threadlogWriteStream.write(JSON.stringify(threadlogRegistry) + "\n");
       
       io.sockets.in(room_id).emit('new thread', {
-        nickname: data.nickname,
+				user_id: user_id,
+        nickname: nickname,
+				image_url: data.image_url,
         detail: data.detail
       });        
     }   
@@ -120,9 +132,10 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('set status', function(data) {
     var status = data.status;
-    client.set('users:' + nickname + ':status', status, function(err, statusSet) {
+    client.set('users:' + user_id + ':status', status, function(err, statusSet) {
       io.sockets.emit('user-info update', {
-        username: nickname,
+				user_id: user_id,
+        nickname: nickname,
         status: status
       });
     });
@@ -137,12 +150,14 @@ io.sockets.on('connection', function (socket) {
       lines.forEach(function(line, index) {
         if(line.length) {
           var historyLine = JSON.parse(line);
-          history.push(historyLine);
+					var image_url = utils.getImageUrl(historyLine.fromUserId, function(image_url) {
+						historyLine.fromImageUrl = image_url;
+ 			      history.push(historyLine);
+  	  			socket.emit('chat history response', {
+    	    		history: history
+						});
+					});
         }
-      });
-
-      socket.emit('chat history response', {
-        history: history
       });
     });
   });
@@ -156,28 +171,30 @@ io.sockets.on('connection', function (socket) {
       lines.forEach(function(line, index) {
         if(line.length) {
           var historyLine = JSON.parse(line);
-          history.push(historyLine);
-        }
-      });
-
-      socket.emit('thread history response', {
-        history: history
+					var image_url = utils.getImageUrl(historyLine.fromUserId, function(image_url) {
+						historyLine.fromImageUrl = image_url;
+ 			      history.push(historyLine);
+  	  			socket.emit('thread history response', {
+        			history: history
+		        });
+					});
+				}
       });
     });
   });
 
   socket.on('disconnect', function() {
-    // 'sockets:at:' + room_id + ':for:' + nickname
-    client.srem('users:' + nickname + ':sockets', socket.id, function(err, removed) {
+    client.srem('users:' + user_id + ':sockets', socket.id, function(err, removed) {
       if(removed) {
         client.srem('socketio:sockets', socket.id);
-        client.scard('users:' + nickname + ':sockets', function(err, members_no) {
+        client.scard('users:' + user_id + ':sockets', function(err, members_no) {
           if(!members_no) {
-            client.srem('rooms:' + room_id + ':online', nickname, function(err, removed) {
+            client.srem('rooms:' + room_id + ':online', user_id, function(err, removed) {
               if (removed) {
                 client.hincrby('rooms:' + room_id + ':info', 'online', -1);
                 chatlogWriteStream.destroySoon();
                 io.sockets.in(room_id).emit('user leave', {
+									user_id: user_id,
                   nickname: nickname
                 });
               }

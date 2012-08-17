@@ -11,7 +11,7 @@ $(function() {
 
   // Then check users online!
   $('.people a').each(function(index, element) {
-    USERS[$(element).data('username')] = 1;
+    USERS[$(element).data('nickname')] = 1;
   });
 
   //View handlers
@@ -58,7 +58,9 @@ $(function() {
         var time = new Date(historyLine.atTime)
           , chatBoxData = {
               nickname: historyLine.from,
+							user_id: historyLine.fromUserId,
               msg: historyLine.withData,
+							image_url: historyLine.fromImageUrl,
               type: 'history',
               time: timeParser(time)
             };
@@ -86,7 +88,9 @@ $(function() {
         var time = new Date(historyLine.atTime)
           , threadBoxData = {
               nickname: historyLine.from,
-              msg: historyLine.withData,
+							user_id: historyLine.fromUserId,
+              detail: historyLine.withData,
+							image_url: historyLine.fromImageUrl,
               type: 'history',
               time: timeParser(time)
             };
@@ -106,17 +110,17 @@ $(function() {
   });
 
   socket.on('new user', function(data) {
-    var message = "$username さんがオンラインになりました。";
+    var message = "$nickname さんがオンラインになりました。";
 
     //If user is not 'there'
-    if(!$('.people a[data-username="' + data.nickname + '"]').length) {
+    if(!$('.people a[data-nickname="' + data.nickname + '"]').length) {
       //Then add it
       $('.online .people').prepend(ich.people_box(data));
       USERS[data.nickname] = 1;
 
       // Chat notice
       message = message
-            .replace('$username', data.nickname);
+            .replace('$nickname', data.nickname);
 
       // Check update time
       var time = new Date()
@@ -141,10 +145,10 @@ $(function() {
   });
 
   socket.on('user-info update', function(data) {
-    var message = "$username は $status です。";
+    var message = "$nickname は $status です。";
 
     // Update dropdown
-    if(data.username === $('#username').text()) {
+    if(data.nickname === $('#nickname').text()) {
       $('.dropdown-status .list a').toggleClass('current', false);
       $('.dropdown-status .list a.' + data.status).toggleClass('current', true);
 
@@ -155,26 +159,26 @@ $(function() {
     }
 
     // Update users list
-    $('.people a[data-username=' + data.username + ']')
+    $('.people a[data-nickname=' + data.nickname + ']')
       .removeClass('available away busy')
       .addClass(data.status);
 
     // Chat notice
     message = message
-          .replace('$username', data.username)
+          .replace('$nickname', data.nickname)
           .replace('$status', data.status);
 
     // Check update time
     var time = new Date()
       , noticeBoxData = {
-          user: data.username,
+          user: data.nickname,
           noticeMsg: message,
           time: timeParser(time)
         };
 
       var $lastChatInput = $('.chat .current').children().last();
       
-      if($lastChatInput.hasClass('notice') && $lastChatInput.data('user') === data.username) {
+      if($lastChatInput.hasClass('notice') && $lastChatInput.data('user') === data.nickname) {
         $lastChatInput.replaceWith(ich.chat_notice(noticeBoxData));
       } else {
         $('.chat .current').append(ich.chat_notice(noticeBoxData));
@@ -230,24 +234,24 @@ $(function() {
   });
 
   socket.on('user leave', function(data) {
-    var nickname = $('#username').text()
-      , message = "$username さんが退出しました。";
+    var nickname = $('#nickname').text()
+      , message = "$nickname さんが退出しました。";
     
-    for (var username in USERS) {
-      if(username === data.nickname && username != nickname) {
+    for (var nickname in USERS) {
+      if(nickname === data.nickname && nickname != nickname) {
         //Mark user as leaving
-        USERS[username] = 0;
+        USERS[nickname] = 0;
 
         //Wait a little before removing user
         setTimeout(function() {
           //If not connected
-          if (!USERS[username]) {
+          if (!USERS[nickname]) {
             //Remove it and notify
-            $('.people a[data-username="' + username + '"]').remove();
+            $('.people a[data-nickname="' + nickname + '"]').remove();
 
             // Chat notice
             message = message
-                  .replace('$username', data.nickname);
+                  .replace('$nickname', data.nickname);
 
             // Check update time
             var time = new Date(),
@@ -301,11 +305,11 @@ $(function() {
         , len = chunks.length;
       for(var i = 0; i<len; i++) {
         socket.emit('my thread', {
-					nickname: $('#username').text(),
+					image_url: $('#image_url').text(),
           detail: chunks[i]
         });
       }
-      $('.thread-detail').val('');
+      $('.thread-detail input').val('');
 
       return false;
     }

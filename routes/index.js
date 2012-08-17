@@ -5,7 +5,7 @@
 
 var app = module.parent.exports.app
   , client = module.parent.exports.client
-  , utils = require('../utils');
+  , action = require('../action');
 
 
 /*
@@ -24,8 +24,8 @@ app.get('/', function(req, res, next) {
  * Rooms list
  */
 
-app.get('/rooms/list', utils.restrict, function(req, res) {
-  utils.getPublicRoomsInfo(client, function(rooms) {
+app.get('/rooms/list', action.restrict, function(req, res) {
+  action.getPublicRoomsInfo(client, function(rooms) {
     res.render('room_list', { rooms: rooms });
   });
 });
@@ -34,10 +34,10 @@ app.get('/rooms/list', utils.restrict, function(req, res) {
  * Create a room
  */
 
-app.post('/create', utils.restrict, function(req, res) {
-  utils.validRoomName(req, res, function(roomKey) {
-    utils.roomExists(req, res, client, roomKey, function() {
-      utils.createRoom(req, res, client, roomKey);
+app.post('/create', action.restrict, function(req, res) {
+  action.validRoomName(req, res, function(roomKey) {
+    action.roomExists(req, res, client, roomKey, function() {
+      action.createRoom(req, res, client, roomKey);
     });
   });
 });
@@ -46,16 +46,15 @@ app.post('/create', utils.restrict, function(req, res) {
  * Join a room
  */
 
-app.get('/rooms/:id', utils.restrict, function(req, res) {
-	var username = req.session.username || 'guest-' + Math.floor( Math.random() * 1000000 );
-	req.session.username = username;
-
-	utils.getCominyUserInfo(req, res, function() {
-		utils.getRoomInfo(req, res, client, function(room) {
-			utils.getUsersInRoom(req, res, client, room, function(users) {
-				utils.getPublicRoomsInfo(client, function(rooms) {
-					utils.getUserStatus(req, client, function(status) {
-						utils.enterRoom(req, res, client, room, users, rooms, status);
+app.get('/rooms/:id', action.restrict, function(req, res) {
+	action.getCominyUserInfo(req, res, function() {
+		action.setUserInfo(req, res, client, function() {
+			action.getRoomInfo(req, res, client, function(room) {
+				action.getUsersInRoom(req, res, client, room, function(users) {
+					action.getPublicRoomsInfo(client, function(rooms) {
+						action.getUserStatus(req, client, function(status) {
+							action.enterRoom(req, res, client, room, users, rooms, status);
+						});
 					});
 				});
 			});

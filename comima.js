@@ -8,27 +8,27 @@ var express				= require('express')
   , config				= require('./config.json')
   , RedisStore		= require('connect-redis')(express)
   , sessionStore	= exports.sessionStore = new RedisStore(config.redis.session)
+	, utils					= exports.utils = require('./utils')
   , winston				= require('winston')
-	, common				= require('./common')
   , init					= require('./init');
 
 /*
  * Instantiate redis
  */
 
-var client = exports.client  = redis.createClient();
+client = exports.client  = redis.createClient();
 
 /*
  * Logger
  */
 
-logger = new (winston.Logger)({
+log = new (winston.Logger)({
 	transports: [
 		new (winston.transports.Console)({
 			colorize:true, level:'silly'
 		}),
 		new (winston.transports.File)({
-			timestamp: common.getDate, filename:'logs/app.log' 
+			timestamp: utils.getDate, filename:'logs/app.log' 
 		})
 	]
 });
@@ -85,7 +85,7 @@ require('./routes');
  */
 
 exports.server = http.createServer(app).listen(app.get('port'), function() {
-  logger.info('server running on port ' + app.get('port'));
+  log.info('[comima] server running on port ' + app.get('port'));
 });
 
 /*
@@ -100,7 +100,7 @@ require('./sockets');
  */
 
 process.on('uncaughtException', function(err){
-  logger.error('Exception: ' + err.stack);
+  log.error('Exception: ' + err.stack);
 });
 
 

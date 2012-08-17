@@ -25,8 +25,8 @@ module.exports = function(client){
   // Delete all users sockets from their lists
   client.keys('users:*:sockets', function(err, keys) {
     if(keys.length) client.del(keys);
-    logger.info('Deletion of sockets reference for each user');
-		if(err) logger.error(err);
+    log.info('[init] Deletion of sockets reference for each user');
+		if(err) log.error(err);
   });
 
   // No one is online when starting up
@@ -43,16 +43,16 @@ module.exports = function(client){
       client.hset(key, 'online', 0);
     });
 
-    logger.info('Deletion of online users from rooms');
-		if(err) logger.error(err);
+    log.info('[init] Deletion of online users from rooms');
+		if(err) log.error(err);
   });
 
   // Delete all socket.io's sockets data from Redis
   client.smembers('socketio:sockets', function(err, sockets) {
     if(sockets.length) client.del(sockets);
 
-    logger.info('Deletion of socket.io stored sockets data');
-		if(err) logger.error(err);
+    log.info('[init] Deletion of socket.io stored sockets data');
+		if(err) log.error(err);
   });
 
   /*
