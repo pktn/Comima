@@ -115,7 +115,7 @@ $(function() {
     //If user is not 'there'
     if(!$('.people a[data-nickname="' + data.nickname + '"]').length) {
       //Then add it
-      $('.online .people').prepend(ich.people_box(data));
+      $('#online-user-list .people').prepend(ich.people_box(data));
       USERS[data.nickname] = 1;
 
       // Chat notice
@@ -234,11 +234,10 @@ $(function() {
   });
 
   socket.on('user leave', function(data) {
-    var nickname = $('#nickname').text()
-      , message = "$nickname さんが退出しました。";
-    
+    var message = "$nickname さんが退出しました。";
+
     for (var nickname in USERS) {
-      if(nickname === data.nickname && nickname != nickname) {
+      if(nickname === data.nickname) {
         //Mark user as leaving
         USERS[nickname] = 0;
 
@@ -247,7 +246,7 @@ $(function() {
           //If not connected
           if (!USERS[nickname]) {
             //Remove it and notify
-            $('.people a[data-nickname="' + nickname + '"]').remove();
+            $('#online-user-list .people .user-img a[data-nickname="' + nickname + '"]').remove();
 
             // Chat notice
             message = message

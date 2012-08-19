@@ -4,8 +4,8 @@
 	.people
 		-users_list.forEach(function(user) {
 			.user-img
-				a(class='#{ user.status }', href='#', data-nickname='#{ user.nickname }')
-					img(src='#{user.image_url}')
+				a(class='#{ user.status }', href='#{ user.user_id }', data-nickname='#{ user.nickname }')
+					img(src='#{ user.image_url }')
 		-});
 	// .people 
 // .online 

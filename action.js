@@ -80,13 +80,17 @@ exports.createRoom = function(req, res, client, roomKey) {
 exports.getCominyUserInfo = function(req, res, next){
 	log.debug("+++ getCominyUserInfo +++");
 
-	var cookieArray = req.headers.cookie.split(';');
+	if (req.headers.cookie) {
+		var cookieArray = req.headers.cookie.split(';') ;
+		var sid;
 
-	for(var i = 0; i < cookieArray.length; i++){
-		if( cookieArray[i].indexOf(config.cominy.cookiekey) !== -1){
-			var sid = cookieArray[i].split('=')[1];
+		for(var i = 0; i < cookieArray.length; i++){
+			if( cookieArray[i].indexOf(config.cominy.cookiekey) !== -1){
+				sid = cookieArray[i].split('=')[1];
+			}
 		}
 	}
+
 	if (sid) {
 		// Fetch Cominy Session File
 		var xmlrpc = require('xmlrpc');
@@ -134,30 +138,40 @@ exports.getCominyUserInfo = function(req, res, next){
  * Set Image Url
  */
 
-exports.setUserInfo = function(req, res, client, next) {
-	log.debug("+++ setImageUrl start +++");
+exports.getUserInfo = function(req, res, client, next) {
+	log.debug("+++ getUserInfo start +++");
 
 	// set userinfo of new guest
 	if (req.session.is_guest && !req.session.user_id) {
 		client.incrby('comima:guest-num', 1, function(err, num) {
   	  req.session.user_id = req.session.nickname = 'guest-' + num;
 			req.session.image_url = config.guest.image_url;
+			req.session.status = 'available';
 	  });
 	}
 
-	client.get('users:' + req.session.user_id + ':image_url', function(err, image_url) {
-		if (image_url != req.session.image_url) {
-			client.set(
-				'users:' + req.session.user_id + ':image_url',
-				req.session.image_url,
+	client.hgetall('users:' + req.session.user_id + ':info', function(err, user) {
+		// first access or if user info is changed
+		if (!user || 
+				user.image_url !== req.session.image_url ||
+				user.nickname  !== req.session.nickname) {
+
+			// set user info
+			client.hmset(
+				'users:' + req.session.user_id + ':info',
+				'user_id', req.session.user_id,
+				'image_url', req.session.image_url,
+				'nickname', req.session.nickname,
+				'status', req.session.status || 'available',
+
 				function(err, ok) {
+					log.debug("+++ getUserInfo end (set value) +++");
 					next();
-					log.debug("+++ setImageUrl end (set value) +++");
 				}
 			);
 		} else {
+			log.debug("+++ getUserInfo end (not set value) +++");
 			next();
-			log.debug("+++ setImageUrl end (not set value) +++");
 		}
 	});
 };
@@ -219,17 +233,10 @@ exports.getUsersInRoom = function(req, res, client, room, fn) {
 
   client.smembers('rooms:' + req.params.id + ':online', function(err, online_users) {
     var users = [];
-utils.d(online_users);
     online_users.forEach(function(user_id, index) {
-			client.get('users:' + user_id + ':status', function(err, status) {
-				utils.getImageUrl(user_id, function(image_url) {
-	        users.push({
-  	          user_id: user_id
-						,	image_url: image_url
-    	      , status: status || 'available'
-      	  });
-				});
-      });
+			utils.getUserInfo(user_id, function(user) {
+	      users.push(user);
+			});
     });
 
     fn(users);
@@ -253,25 +260,10 @@ exports.getPublicRooms = function(client, fn){
 };
 
 /*
- * Get User status
- */
-
-exports.getUserStatus = function(req, client, fn){
-	log.debug("+++ getUserStatus start +++");
-
-	client.get('users:' + req.session.user_id + ':status', function(err, status) {
-    if (!err && status) fn(status);
-    else fn('available');
-  });
-
-	log.debug("+++ getUserStatus end +++");
-};
-
-/*
  * Enter to a room
  */
 
-exports.enterRoom = function(req, res, client, room, users, rooms, status){
+exports.enterRoom = function(req, res, client, room, users, rooms){
 	log.debug("+++ enterRoom start +++");
 
   res.locals({
@@ -281,7 +273,7 @@ exports.enterRoom = function(req, res, client, room, users, rooms, status){
 			user_id: req.session.user_id,
       nickname: req.session.nickname,
 			image_url: req.session.image_url,
-      status: status
+      status: req.session.status
     },
     users_list: users
   });

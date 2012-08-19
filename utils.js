@@ -10,22 +10,24 @@ exports.d = function(obj) {
 /*
  * my variable
  */
-var image_urls = {};
+var users = {};
 
 /*
  * my func
  */
 
-exports.getImageUrl = function (user_id, fn) {
-  // add stored image_url to historyLine
-  if (image_urls[user_id]) {
-    fn(image_urls[user_id]);
+exports.getUserInfo = function (user_id, fn) {
+  // get stored user info 
+  if (users[user_id]) {
+    log.debug("get user info from cache" + " for " + user_id);
+    fn(users[user_id]);
 
-  // store image_urls in local variable
+  // store user info in local variable
   } else {
-    client.get('users:' + user_id + ':image_url', function(err, image_url) {
-      log.debug("get image_url " + image_url + " for " + user_id);
-      fn(image_url);
+    client.hgetall('users:' + user_id + ':info', function(err, user) {
+      log.debug("get user info" + " for " + user_id);
+			users[user_id] = user;
+      fn(user);
     });
   }
 }

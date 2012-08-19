@@ -76,11 +76,12 @@ io.sockets.on('connection', function (socket) {
       client.sadd('rooms:' + room_id + ':online', user_id, function(err, userAdded) {
         if(userAdded) {
 					client.hincrby('rooms:' + room_id + ':info', 'online', 1);
-					client.get('users:' + user_id + ':status', function(err, status) {
+					utils.getUserInfo(user_id, function(user) {
     	      io.sockets.in(room_id).emit('new user', {
 							 user_id: user_id
-      	     , nickname: nickname
-        	   , status: status || 'available'
+      	     , nickname: user.nickname
+             , image_url: user.image_url
+        	   , status: user.status || 'available'
             });
           });
         }
@@ -132,7 +133,7 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('set status', function(data) {
     var status = data.status;
-    client.set('users:' + user_id + ':status', status, function(err, statusSet) {
+    client.hset('users:' + user_id + ':info', 'status', status, function(err, ok) {
       io.sockets.emit('user-info update', {
 				user_id: user_id,
         nickname: nickname,
@@ -150,8 +151,8 @@ io.sockets.on('connection', function (socket) {
       lines.forEach(function(line, index) {
         if(line.length) {
           var historyLine = JSON.parse(line);
-					var image_url = utils.getImageUrl(historyLine.fromUserId, function(image_url) {
-						historyLine.fromImageUrl = image_url;
+					utils.getUserInfo(historyLine.fromUserId, function(user) {
+						historyLine.fromImageUrl = user.image_url;
  			      history.push(historyLine);
   	  			socket.emit('chat history response', {
     	    		history: history
@@ -171,8 +172,8 @@ io.sockets.on('connection', function (socket) {
       lines.forEach(function(line, index) {
         if(line.length) {
           var historyLine = JSON.parse(line);
-					var image_url = utils.getImageUrl(historyLine.fromUserId, function(image_url) {
-						historyLine.fromImageUrl = image_url;
+					utils.getUserInfo(historyLine.fromUserId, function(user) {
+						historyLine.fromImageUrl = user.image_url;
  			      history.push(historyLine);
   	  			socket.emit('thread history response', {
         			history: history

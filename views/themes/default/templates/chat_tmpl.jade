@@ -17,7 +17,9 @@ script#chat_notice(type='text/html')
     |  {{ noticeMsg }}
 
 script#people_box(type='text/html')
-  a(class='{{ status }}', href='#', data-nickname='{{ nickname }}')
+  .user-img
+    a(class='{{ status }}', href='{{ nickname }}', data-nickname='{{ nickname }}')
+      img(src='{{ image_url }}')
 
 script#title_template(type='text/html')
   | {{#count}} ({{ count }}) {{/count}} {{ roomName }} - Cominy Matching
