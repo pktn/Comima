@@ -95,6 +95,8 @@ $(function() {
               time: timeParser(time)
             };
 
+        $('.thread .history').append(parseBox(ich.thread_box(threadBoxData)));
+/*
         $lastInput = $('.thread .history').children().last();
         lastInputUser = $lastInput.data('user');
 
@@ -103,14 +105,14 @@ $(function() {
         } else {
           $('.thread .history').append(parseBox(ich.thread_box(threadBoxData)));
         }
-
+*/
         $('.thread').scrollTop($('.thread').prop('scrollHeight'));
       });
     }
   });
 
   socket.on('new user', function(data) {
-    var message = "$nickname さんがオンラインになりました。";
+    var message = "$nickname さんが入室しました。";
 
     //If user is not 'there'
     if(!$('.people a[data-nickname="' + data.nickname + '"]').length) {
@@ -130,6 +132,9 @@ $(function() {
             time: timeParser(time)
           };
       
+      $('.chat .current').append(ich.chat_notice(noticeBoxData));
+      $('.chat').scrollTop($('.chat').prop('scrollHeight'));
+/*
       var $lastChatInput = $('.chat .current').children().last();
       
       if($lastChatInput.hasClass('notice') && $lastChatInput.data('user') === data.nickname) {
@@ -138,6 +143,7 @@ $(function() {
         $('.chat .current').append(ich.chat_notice(noticeBoxData));
         $('.chat').scrollTop($('.chat').prop('scrollHeight'));
       }
+*/
     } else {
       //Instead, just check him as 'back'
       USERS[data.nickname] = 1;
@@ -234,32 +240,30 @@ $(function() {
   });
 
   socket.on('user leave', function(data) {
-    var message = "$nickname さんが退出しました。";
-
+    var message = "$nickname さんが退室しました。";
     for (var nickname in USERS) {
       if(nickname === data.nickname) {
         //Mark user as leaving
         USERS[nickname] = 0;
 
-        //Wait a little before removing user
-        setTimeout(function() {
-          //If not connected
-          if (!USERS[nickname]) {
-            //Remove it and notify
-            $('#online-user-list .people .user-img a[data-nickname="' + nickname + '"]').remove();
+        //Remove it and notify
+        $('#online-user-list .people .user-img a[data-nickname="' + nickname + '"]').remove();
 
-            // Chat notice
-            message = message
-                  .replace('$nickname', data.nickname);
+        // Chat notice
+        message = message
+              .replace('$nickname', data.nickname);
 
-            // Check update time
-            var time = new Date(),
-              noticeBoxData = {
-                user: data.nickname,
-                noticeMsg: message,
-                time: timeParser(time)
-              };
+        // Check update time
+        var time = new Date(),
+          noticeBoxData = {
+            user: data.nickname,
+            noticeMsg: message,
+            time: timeParser(time)
+          };
 
+        $('.chat .current').append(ich.chat_notice(noticeBoxData));
+        $('.chat').scrollTop($('.chat').prop('scrollHeight'));
+/*
             var $lastChatInput = $('.chat .current').children().last();
             
             if($lastChatInput.hasClass('notice') && $lastChatInput.data('user') === data.nickname) {
@@ -268,9 +272,8 @@ $(function() {
               $('.chat .current').append(ich.chat_notice(noticeBoxData));
               $('.chat').scrollTop($('.chat').prop('scrollHeight'));
             }
-          };
-        }, 2000);
-      }
+*/
+      };
     }
   });
 

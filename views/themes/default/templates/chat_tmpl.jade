@@ -2,18 +2,18 @@ script#chat_box(type='text/html')
   .chat-box(data-user='{{ nickname }}', data-type='{{ type }}')
     .avatar
       img(src='{{ image_url }}')
-    h5
-      | {{ nickname }}
+    span.posted-by
+      {{ nickname }}
     {{> chat_box_text }}
 
 script#chat_box_text(type='text/html')
   p
-    span.date {{ time.hours }}:{{ time.minutes }} {{ time.meridiem }}
+    span.date {{ time.hours }}:{{ time.minutes }}
     | {{ msg }}
 
 script#chat_notice(type='text/html')
   .notice(data-user="{{ user }}")
-    span.date {{ time.hours }}:{{ time.minutes }} {{ time.meridiem }}
+    span.date {{ time.hours }}:{{ time.minutes }}
     |  {{ noticeMsg }}
 
 script#people_box(type='text/html')

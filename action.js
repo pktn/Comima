@@ -98,8 +98,9 @@ exports.getCominyUserInfo = function(req, res, next){
 
 		fs.readFile(config.cominy.sessionfilepath + sid, function(err, data){
   		if(err) {
-				log.error("Could not open file: " + err);
-				process.exit(1);
+				log.debug("Could not open file : " + err);
+				req.session.is_guest = true;
+				next();
 			}
 			var uid_str = data.toString().split('|')[2];
 			var uid = uid_str.match(/s:6:"(\d+)"/)[1];
@@ -150,6 +151,9 @@ exports.getUserInfo = function(req, res, client, next) {
 	  });
 	}
 
+	// status
+	req.session.status = req.session.status || 'available';
+
 	client.hgetall('users:' + req.session.user_id + ':info', function(err, user) {
 		// first access or if user info is changed
 		if (!user || 
@@ -162,7 +166,7 @@ exports.getUserInfo = function(req, res, client, next) {
 				'user_id', req.session.user_id,
 				'image_url', req.session.image_url,
 				'nickname', req.session.nickname,
-				'status', req.session.status || 'available',
+				'status', req.session.status,
 
 				function(err, ok) {
 					log.debug("+++ getUserInfo end (set value) +++");

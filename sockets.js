@@ -194,6 +194,7 @@ io.sockets.on('connection', function (socket) {
               if (removed) {
                 client.hincrby('rooms:' + room_id + ':info', 'online', -1);
                 chatlogWriteStream.destroySoon();
+utils.d('emit leave: ' + user_id);
                 io.sockets.in(room_id).emit('user leave', {
 									user_id: user_id,
                   nickname: nickname

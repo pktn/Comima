@@ -433,17 +433,20 @@ sidebar .files  a.file i{background: url('../img/icons.png') no-repeat 0 -59px;}
 .content .chat{ float: right; width: 100%; height: 488px; z-index: 100; overflow-y: scroll;  }
 .content .chat .notice{background: #fcfde6; font-size: 11px; font-style: italic; color: #595d07; padding: 8px 22px 8px 80px}
 .content .chat .notice span.date{float: right;}
-.content .chat .chat-box{text-shadow: 0 1px 0 white; position: relative; padding:  16px 22px; display: block; border-bottom: 1px solid #eee;padding-left: 6.4em}
+.content .chat .chat-box{text-shadow: 0 1px 0 white; position: relative; padding:  8px 16px; display: block; border-bottom: 1px solid #eee; padding-left: 4.6em; border-bottom:solid 1px #DDD;}
 .content .chat .chat-box:nth-child(2n){background-color: #f1f1f1}
 .content .chat .chat-box h5{margin-top: 0; font-size: 1em; margin-bottom: 1em}
-.content .chat .chat-box .avatar{position: absolute; left: 1.4em; top: 1.4em; border-radius: 4px}
-.content .chat .chat-box .avatar img{width: 48px; height: 48px;}
+.content .chat .chat-box .avatar{position: absolute; left: 0.6em; top: 0.6em; border-radius: 4px}
+.content .chat .chat-box .avatar img{width: 36px; height: 36px;}
 
-.content .chat .chat-box p .date{display: none; float: right; font-size: 0.8em; color: rgba(0,0,0,.6); font-weight: normal; font-style: italic;}
+.content .chat .chat-box p {margin: 3px 0;}
+.content .chat .chat-box p .date{float:right; font-size: 0.8em; color: rgba(0,0,0,.6); font-weight: normal;}
 .content .chat .chat-box p:first-of-type .date{display: block;}
 .content .chat .chat-box p:hover .date{display: block;}
 .content .chat .chat-box p:last-child{margin-bottom: 0}
 .content .chat .chat-box p a{color: #333; border-bottom: 1px solid #ccc; padding-bottom: 1px}
+
+.content .chat .chat-box .posted-by {font-size:1.0em; font-weight:bold;}
 .content .chat .chat-box p span.emoticon{display:inline-block; width:18px; height:18px; margin-bottom: -4px}
 .content .chat-input{ overflow: hidden; width: 100%; height: 120px; z-index: 500;	border-top: 1px solid #ccc;
   background-image: -webkit-gradient(linear, 0 0, 0 45, color-stop(0.044, #fdfdfd), to(#dfe2e9));
@@ -457,12 +460,16 @@ sidebar .files  a.file i{background: url('../img/icons.png') no-repeat 0 -59px;}
 .content .thread{ float: left; width: 100%; height: 100%; z-index: 100; overflow-y: scroll;  }
 .content .thread .notice{background: #fcfde6; font-size: 11px; font-style: italic; color: #595d07; padding: 8px 22px 8px 80px}
 .content .thread .notice span.date{float: right;}
-.content .thread .thread-box{text-shadow: 0 1px 0 white; position: relative; padding:  16px 22px; display: block; border-bottom: 1px solid #eee;padding-left: 6.4em}
+.content .thread .thread-box{text-shadow: 0 1px 0 white; position: relative; padding:  16px 22px; display: block; border-bottom: 1px solid #eee;padding-left: 7.6em} 
+.content .thread .thread-box p {width: 520px; border-radius: 4px; background-color: #fff; padding: 10px;}
 .content .thread .thread-box:nth-child(2n){background-color: #f1f1f1}
 .content .thread .thread-box h5{margin-top: 0; font-size: 1em; margin-bottom: 1em}
-.content .thread .thread-box .avatar{position: absolute; left: 1.4em; top: 1.4em; border-radius: 4px}
-.content .thread .thread-box .avatar img{max-width: 48px}
-.content .thread .thread-box p .date{display: none; float: right; font-size: 0.8em; color: rgba(0,0,0,.6); font-weight: normal; font-style: italic;}
+.content .thread .thread-box .avatar {position: absolute; left: 1.4em; top: 1.4em; border-radius: 4px}
+.content .thread .thread-box .avatar img{height: 64px; width: 64px}
+.content .thread .thread-box .posted-by {float:left;}
+.content .thread .thread-box .detail {}
+.content .thread .thread-box .text-box {clear:both;}
+.content .thread .thread-box .date {text-align: right;}
 .content .thread .thread-box p:first-of-type .date{display: block;}
 .content .thread .thread-box p:hover .date{display: block;}
 .content .thread .thread-box p:last-child{margin-bottom: 0}
@@ -740,8 +747,8 @@ input::-webkit-input-placeholder, input::-moz-input-placeholder		 {color: #999; 
 
 /* comima */
 header .room-title { float:left; color:#FFF; font-size:2em; }
-#left-column { width: 640px; background-color: #EFE; float: left;  }
-#right-column { width: 320px; background-color: #EEF; float: right;  }
+#left-column { width: 680px; background-color: #EFE; float: left;  }
+#right-column { width: 280px; background-color: #EEF; float: right;  }
 #thread-list { height: 490px; }
 #online-user-list { height: 130px; border: solid 1px #000; padding: 6px; background-color: #FEE; clear: both; }
 #online-user-list a { color: #06e; }
@@ -770,4 +777,16 @@ header .room-title { float:left; color:#FFF; font-size:2em; }
 #thread-list .button-circle.lock span i{background:  url('../img/icon-unlocked.png') center no-repeat; }
 #thread-list .button-circle.lock.active span i{background:  url('../img/icon-locked.png') center no-repeat; }
 
+/* thread */
+.rectangle {
+	position: absolute;
+	left: 5.6em;
+	top: 3.6em;
+  border-left: 0;
+  border-right: solid 20px white;
+  border-top: solid 10px transparent;
+  border-bottom: solid 5px transparent;
+  width: 0;
+  height: 0;
+}
 
