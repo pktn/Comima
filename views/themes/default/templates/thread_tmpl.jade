@@ -5,13 +5,11 @@ script#thread_box(type='text/html')
     .detail
       .posted-by
         | {{ nickname }}
+      .date-box
+        | {{ time.hours }}:{{ time.minutes }}
       .text-box
-        {{> thread_box_text }}
-
-script#thread_box_text(type='text/html')
-  span.date {{ time.hours }}:{{ time.minutes }}
-  p
-    | {{ detail }}
+        p
+          | {{ detail }}
 
 script#thread_notice(type='text/html')
   .notice(data-user="{{ user }}")

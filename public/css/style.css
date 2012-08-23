@@ -224,7 +224,6 @@ html, body {
 
 html, body{
 	height: 100%;
-	overflow: hidden;
 }
 
 body{position: relative; font-size: 78%; }
@@ -377,55 +376,6 @@ header a:hover{color: #ccc}
 	width: 180px;
 }
 
-sidebar{width: 200px; height: auto; max-height: 100%; position: absolute; color: #f1f1f1; top: 4em; bottom: 0; font-size: .9em; border-right: 1px solid black; z-index: 400; background: #222 url('../img/bg-sidebar.png')}
-sidebar h3{
-	font-size: 1em;
-	text-transform: uppercase;
-	padding: .6em 1em;
-	background-image: -webkit-gradient(linear, 0 0, 0 23, from(#7e7e7e), color-stop(0.086, #616161), to(#3a3a3a));
-	background-image: -webkit-linear-gradient(#7e7e7e, #616161 8.6%, #3a3a3a);
-	background-image: -moz-linear-gradient(#7e7e7e, #616161 8.6%, #3a3a3a);
-	background-image: -o-linear-gradient(#7e7e7e, #616161 8.6%, #3a3a3a);
-	color: white;
-	text-shadow: 0 1px 0 black;
-	margin-top: 0;
-}
-sidebar h4{text-transform: uppercase; color: #555; font-size: 1em; margin-top: 2em}
-
-sidebar a{color: white;}
-sidebar h4, sidebar div.online .people a{padding: 0 10px}
-sidebar div.online {overflow: hidden;  height: 100%}
-sidebar div.files {height: 18%;  display: none; }
-sidebar div.online .people a{display: block; padding: 8px 10px;  border-bottom: 1px solid rgba(255,255,255,.04)}
-sidebar div.online .people a:hover{color: white; cursor: text}
-
-/*
-	---- Hide until multichat
-	sidebar div.online .people a:hover{
-	background: white;
-	
-	background-image: -webkit-linear-gradient(#f1f1f1,  #ccc);
-	background-image: -moz-linear-gradient(#f1f1f1,  #ccc);
-	background-image: -o-linear-gradient(#f1f1f1,  #ccc);
-	color: black;
-	 border-bottom: 1px solid #ccc;
-}*/
-sidebar div.online{margin-bottom: 3em; }
-sidebar div.online .people a b{margin-bottom: -2px}
-
-sidebar .files .files-container{padding: 1em}
-sidebar .files a {display: block; margin-bottom: 1.4em}
-sidebar .files a span{
-	background: white; margin-right: .8em; border-radius: 3px; float: left; margin-top: -4px; display: inline-block;
-	background-image: -webkit-linear-gradient(#f1f1f1,  #ccc);
-	background-image: -moz-linear-gradient(#7e7e7e, #616161 8.6%, #3a3a3a);
-	background-image: -o-linear-gradient(#7e7e7e, #616161 8.6%, #3a3a3a);
-}
-
-sidebar .files  a i{ margin: 4px; display: block; width: 12px; height: 12px}
-sidebar .files  a.picture i{background: url('../img/icons.png') no-repeat 0 1px;}
-sidebar .files  a.file i{background: url('../img/icons.png') no-repeat 0 -59px;}
-
 .content{ width: 960px; margin: 0 auto; }
 
 /* chat */
@@ -461,15 +411,15 @@ sidebar .files  a.file i{background: url('../img/icons.png') no-repeat 0 -59px;}
 .content .thread .notice{background: #fcfde6; font-size: 11px; font-style: italic; color: #595d07; padding: 8px 22px 8px 80px}
 .content .thread .notice span.date{float: right;}
 .content .thread .thread-box{text-shadow: 0 1px 0 white; position: relative; padding:  16px 22px; display: block; border-bottom: 1px solid #eee;padding-left: 7.6em} 
-.content .thread .thread-box p {width: 520px; border-radius: 4px; background-color: #fff; padding: 10px;}
+.content .thread .thread-box p {width: 520px; border-radius: 4px; background-color: #fff; padding: 10px; margin:4px 0;}
 .content .thread .thread-box:nth-child(2n){background-color: #f1f1f1}
 .content .thread .thread-box h5{margin-top: 0; font-size: 1em; margin-bottom: 1em}
 .content .thread .thread-box .avatar {position: absolute; left: 1.4em; top: 1.4em; border-radius: 4px}
 .content .thread .thread-box .avatar img{height: 64px; width: 64px}
 .content .thread .thread-box .posted-by {float:left;}
 .content .thread .thread-box .detail {}
-.content .thread .thread-box .text-box {clear:both;}
-.content .thread .thread-box .date {text-align: right;}
+.content .thread .thread-box .date-box {float: right;}
+.content .thread .thread-box .text-box {clear:both; margin-bottom:2px;}
 .content .thread .thread-box p:first-of-type .date{display: block;}
 .content .thread .thread-box p:hover .date{display: block;}
 .content .thread .thread-box p:last-child{margin-bottom: 0}
@@ -564,47 +514,6 @@ sidebar .files  a.file i{background: url('../img/icons.png') no-repeat 0 -59px;}
 .fancy-theme .chat-input{background: url('../img/bg-purple.png'); border: 1px solid #000; box-shadow: 0 0 0 1px rgba(255,255,255,.1) inset,  0 0 10px 2px rgba(0,0,0,.65) inset ;}
 
 img{height: auto; width: auto;}
-body.home-page{background: #f1f1f1 url('../img/bg-site.png'); position: relative; }
-body.home-page .inner-padding{padding: 2em}
-body.home-page .homepage-container {width: 824px;  padding-top: 10em; overflow: hidden; margin: auto; position: relative}
-body.home-page .homepage-container .login-box{background: white; z-index: 100000; position: absolute; right: 0; text-align: center; width: 300px; }
-body.home-page .homepage-container .login-box .logo{height: 154px; margin: auto; display: block; margin-bottom: 2em; width: auto}
-body.home-page .homepage-container .login-box p{line-height: 2em}
-.box-container{ border-radius: 4px; background: white; border: 1px solid #ccc; }
-body.home-page .homepage-container .slideshow, .homepage-container .login-box{height: 350px;  border-radius: 4px; float: left; border: 1px solid #ccc; }
-body.home-page .homepage-container .slideshow{background: white; position: relative; width: 500px; margin-right: 20px; display: inline-block; float: left;}
-body.home-page .homepage-container .slideshow .slide{background: white; text-align: center; border-radius: 4px;  width: 500px}
-body.home-page .homepage-container .slideshow .slide .slide-image{background: url('../img/slide-image.png'); width: 480px; height: 284px; border-radius: 5px; margin: 0 0 0 10px}
-body.home-page .homepage-container .slideshow #nav{bottom: 0;  width: auto; max-width: 100%; z-index: 10000; left: 0; right: 0; padding: 1em; text-align: center; position: absolute}
-body.home-page .homepage-container .slideshow #nav a{background: #999; border-radius: 100px; text-indent: -1000em; display: inline-block; margin-right: 6px; width: 10px; height: 10px}
-body.home-page .homepage-container .slideshow #nav a.activeSlide{background: #333}
-body.home-page .homepage-container h2{font-weight: 100; color: #666}
-
-body.home-page .sign-in-twitter {background: url('../img/sign-in-with-twitter-l.png') no-repeat; margin: auto; width: 151px; height: 24px; display: block; text-indent: -1000em}
-
-/*body.home-page .homepage-container .slideshow{
-	-webkit-animation-name: slideshow;
- -webkit-animation-duration: 2s;
- -webkit-animation-timing-function: ease-out;
-}
-*/
-
-body.home-page .select-room-container {width: 600px;  margin: auto; margin-top: 5em; text-align: center;}
-body.home-page .select-room-container .logo{width: 120px; margin-bottom: 1em}
-
-body.home-page footer {font-size: 10px; font-weight: bold; bottom: 30px; text-transform: uppercase; padding: 1em;color: #999; right: 0; left: 0; text-align: center; position: absolute; }
-body.home-page footer a{color: #666}
-
-/*@-webkit-keyframes slideshow {
-  from {
-    left: 800px;
-		opacity: 0;
-  }
-  to {
-    left: 0;
-		opacity: 1;
-  }
-}*/
 
 .rooms-block, .create-room-block{float: left; width: 260px}
 .inactive{margin-top: 10px}

@@ -216,19 +216,21 @@ $(function() {
   });
 
   socket.on('new thread', function(data) {
-    var time = new Date(),
-        $lastInput = $('.thread .current').children().last(),
-        lastInputUser = $lastInput.data('user');
+    var time = new Date();
+//        $lastInput = $('.thread .current').children().last(),
+//        lastInputUser = $lastInput.data('user');
 
     data.type = 'thread';
-    data.time = timeParser(time)
+    data.time = timeParser(time);
 
+/*
     if($lastInput.hasClass('thread-box') && lastInputUser === data.nickname) {
       $lastInput.append(parseBoxMsg(ich.thread_box_text(data)));
     } else {
       $('.thread .current').append(parseBox(ich.thread_box(data)));
     }
-
+*/
+    $('.thread .current').append(parseBox(ich.thread_box(data)));
     $('.thread').scrollTop($('.thread').prop('scrollHeight'));
     
     //update title if window is hidden
