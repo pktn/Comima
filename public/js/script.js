@@ -13,7 +13,7 @@ $(function() {
   $('.people a').each(function(index, element) {
     USERS[$(element).data('nickname')] = 1;
   });
-
+  
   //View handlers
   $(".dropdown a.selected").click(function() {
     $('.create-room').show().next("form .text").hide();
@@ -29,7 +29,7 @@ $(function() {
   $(".lock").click(function() {
     $(this).toggleClass('active');
   });
-  
+
   $(".fancybox").fancybox({'margin': 0, 'padding': 0});
 
   //Socket.io
@@ -47,6 +47,7 @@ $(function() {
     if($('.thread .thread-box').length == 0) {
       socket.emit('thread history request');
     }
+		updateOnlineNum();
   });
 
   socket.on('chat history response', function(data) {
@@ -80,34 +81,20 @@ $(function() {
   });
 
   socket.on('thread history response', function(data) {
-    if(data.history && data.history.length) {
-      var $lastInput
-        , lastInputUser;
+    var h = data.historyLine;
 
-      data.history.forEach(function(historyLine) {
-        var time = new Date(historyLine.atTime)
-          , threadBoxData = {
-              nickname: historyLine.from,
-							user_id: historyLine.fromUserId,
-              detail: historyLine.withData,
-							image_url: historyLine.fromImageUrl,
+    if(h) {
+      var time = new Date(h.atTime)
+        , threadBoxData = {
+            nickname: h.from,
+	  				user_id: h.fromUserId,
+            detail: h.withData,
+		  			image_url: h.fromImageUrl,
               type: 'history',
               time: timeParser(time)
-            };
-
-        $('.thread .history').append(parseBox(ich.thread_box(threadBoxData)));
-/*
-        $lastInput = $('.thread .history').children().last();
-        lastInputUser = $lastInput.data('user');
-
-        if($lastInput.hasClass('thread-box') && lastInputUser === threadBoxData.nickname) {
-          $lastInput.append(parseBoxMsg(ich.thread_box_text(threadBoxData)));
-        } else {
-          $('.thread .history').append(parseBox(ich.thread_box(threadBoxData)));
-        }
-*/
-        $('.thread').scrollTop($('.thread').prop('scrollHeight'));
-      });
+          };
+      $('.thread .history').append(parseBox(ich.thread_box(threadBoxData)));
+      $('.thread').scrollTop($('.thread').prop('scrollHeight'));
     }
   });
 
@@ -134,20 +121,13 @@ $(function() {
       
       $('.chat .current').append(ich.chat_notice(noticeBoxData));
       $('.chat').scrollTop($('.chat').prop('scrollHeight'));
-/*
-      var $lastChatInput = $('.chat .current').children().last();
-      
-      if($lastChatInput.hasClass('notice') && $lastChatInput.data('user') === data.nickname) {
-        $lastChatInput.replaceWith(ich.chat_notice(noticeBoxData));
-      } else {
-        $('.chat .current').append(ich.chat_notice(noticeBoxData));
-        $('.chat').scrollTop($('.chat').prop('scrollHeight'));
-      }
-*/
+
     } else {
       //Instead, just check him as 'back'
       USERS[data.nickname] = 1;
     }
+
+		updateOnlineNum();
   });
 
   socket.on('user-info update', function(data) {
@@ -217,19 +197,10 @@ $(function() {
 
   socket.on('new thread', function(data) {
     var time = new Date();
-//        $lastInput = $('.thread .current').children().last(),
-//        lastInputUser = $lastInput.data('user');
 
     data.type = 'thread';
     data.time = timeParser(time);
 
-/*
-    if($lastInput.hasClass('thread-box') && lastInputUser === data.nickname) {
-      $lastInput.append(parseBoxMsg(ich.thread_box_text(data)));
-    } else {
-      $('.thread .current').append(parseBox(ich.thread_box(data)));
-    }
-*/
     $('.thread .current').append(parseBox(ich.thread_box(data)));
     $('.thread').scrollTop($('.thread').prop('scrollHeight'));
     
@@ -265,18 +236,9 @@ $(function() {
 
         $('.chat .current').append(ich.chat_notice(noticeBoxData));
         $('.chat').scrollTop($('.chat').prop('scrollHeight'));
-/*
-            var $lastChatInput = $('.chat .current').children().last();
-            
-            if($lastChatInput.hasClass('notice') && $lastChatInput.data('user') === data.nickname) {
-              $lastChatInput.replaceWith(ich.chat_notice(noticeBoxData));
-            } else {
-              $('.chat .current').append(ich.chat_notice(noticeBoxData));
-              $('.chat').scrollTop($('.chat').prop('scrollHeight'));
-            }
-*/
       };
     }
+		updateOnlineNum();
   });
 
   $(".chat-input input").keypress(function(e) {
@@ -303,7 +265,7 @@ $(function() {
 		$('.post-thread').show();
 		$('.fancybox-close').click();
 
-    var inputText = $('.thread-detail input').val().trim();
+    var inputText = $('.thread-detail textarea').val().trim();
     if(inputText) {
       var chunks = inputText.match(/.{1,1024}/g)
         , len = chunks.length;
@@ -313,7 +275,7 @@ $(function() {
           detail: chunks[i]
         });
       }
-      $('.thread-detail input').val('');
+      $('.thread-detail textarea').val('');
 
       return false;
     }
@@ -327,15 +289,38 @@ $(function() {
   });
 
   var timeParser = function(date) {
-    var hours = date.getHours()
-      , minutes = date.getMinutes()
-      , seconds = date.getSeconds();
-    return {
-      hours: hours > 12 ? hours - 12 : hours,
-      minutes: minutes > 10 ? minutes : '0' + minutes,
-      seconds: seconds > 10 ? seconds : '0' + seconds,
-      meridiem: hours > 12 ? 'PM' : 'AM'
+    var ints = {
+        second: 1,
+        minute: 60,
+        hour: 3600,
+        day: 86400,
+        week: 604800,
+        month: 2592000,
+        year: 31536000
+    };
+		var jpints = {
+				second: '秒',
+        minute: '分',
+        hour: '時間',
+        day: '日',
+        week: '週間',
+        month: 'ヶ月',
+        year: '年'
+ 		};
+    time = +date;
+ 
+    var gap = ((+new Date()) - time) / 1000,
+        amount, measure;
+ 
+    for (var i in ints) {
+      if (gap > ints[i]) { measure = i; }
     }
+ 
+    amount = gap / ints[measure];
+    amount = gap > ints.day ? (Math.round(amount * 100) / 100) : Math.round(amount);
+    amount += jpints[measure] + '前';
+ 
+    return amount;
   };
 
   var textParser = function(text) {
@@ -455,6 +440,14 @@ $(function() {
       roomName: roomName
     }, true));
   }
+
+	function updateOnlineNum() {
+		var num = 0;
+		for (var key in USERS) {
+			if (USERS[key]) { num = num + 1; }
+		}
+		$(".online-num").text('（' + num + '）');
+	}
 
   function focusInput() {
     $(".chat-input input.text").focus();

@@ -98,9 +98,10 @@ exports.getCominyUserInfo = function(req, res, next){
 
 		fs.readFile(config.cominy.sessionfilepath + sid, function(err, data){
   		if(err) {
-				log.debug("Could not open file : " + err);
+				log.debug("could not open file : " + err);
 				req.session.is_guest = true;
 				next();
+				return;
 			}
 			var uid_str = data.toString().split('|')[2];
 			var uid = uid_str.match(/s:6:"(\d+)"/)[1];

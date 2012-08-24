@@ -17,7 +17,7 @@ var parent = module.parent.exports
   , fs = require('fs')
 	;
 
-var io = sio.listen(server);
+var io = sio.listen(server, {'log level': 2});
 
 io.set('authorization', function (hsData, accept) {
   if(hsData.headers.cookie) {
@@ -61,8 +61,8 @@ io.sockets.on('connection', function (socket) {
     , threadlogFileName = './threads/' + room_id + '_' + utils.getLogFilePath()
     , threadlogWriteStream = fs.createWriteStream(threadlogFileName, {'flags': 'a'});
 
-	log.info(
-		'New connection from '
+	log.debug(
+		'[socket.io] new connection from '
 		+ hs.address.address + ":" + hs.address.port
 		+ ' user_id:' + user_id
 		+ ' nickname:' + nickname
@@ -164,19 +164,16 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('thread history request', function() {
-    var history = [];
     var tail = require('child_process').spawn('tail', ['-n', 5, threadlogFileName]);
     tail.stdout.on('data', function (data) {
       var lines = data.toString('utf-8').split("\n");
-      
       lines.forEach(function(line, index) {
         if(line.length) {
           var historyLine = JSON.parse(line);
 					utils.getUserInfo(historyLine.fromUserId, function(user) {
 						historyLine.fromImageUrl = user.image_url;
- 			      history.push(historyLine);
   	  			socket.emit('thread history response', {
-        			history: history
+        			historyLine: historyLine
 		        });
 					});
 				}
@@ -194,7 +191,6 @@ io.sockets.on('connection', function (socket) {
               if (removed) {
                 client.hincrby('rooms:' + room_id + ':info', 'online', -1);
                 chatlogWriteStream.destroySoon();
-utils.d('emit leave: ' + user_id);
                 io.sockets.in(room_id).emit('user leave', {
 									user_id: user_id,
                   nickname: nickname

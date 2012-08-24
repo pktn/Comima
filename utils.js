@@ -4,7 +4,7 @@
 var util = require('util');
 
 exports.d = function(obj) {
- log.verbose(util.inspect(obj));
+ log.silly(util.inspect(obj));
 }
 
 /*

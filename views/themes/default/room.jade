@@ -1,33 +1,34 @@
 extends layout
 
 block content
-	.color-line
 	.wrap
 		header
-			.room-title #{room.name} の集会所
-			include rooms_dropdown
+			.room-title
+				img(src='/img/logo-cominy.png')
+				b #{room.name}
+				の集会所
+			//include rooms_dropdown
 			include user_box
 
-			// post thread form
+			// -- post thread form
 			#thread.modal.modal-thread(style='display: none')
-				h2 スレッド新規作成
 					.modal-content
-						ほげほげ
+						h2 スレッド新規作成
 					.thread-detail
-						input(type='text', name='', value='')
+						textarea(name='', value='')
 					.modal-footer
 						a.button.post-thread(href='#') スレッドを立てる
-
-			a.button-circle.lock(href='#', style="display:none;")
+			// -- post thread form
 
 		.content(role='main')
 			#left-column
 				#thread-list
-					h2 募集スレッド
-					.post-thread
-						a.button-circle.thread.fancybox(href='#thread')
-						スレッド新規作成
-					// .post-thread
+					.caption
+						.caption-title 募集スレッド
+						.post-thread
+							a.fancybox(href='#thread')
+								スレッド新規作成
+					// .caption
 					.thread
 						// thread-content
 						.history
@@ -41,17 +42,12 @@ block content
 
 				// #thread-list
 
-				#online-user-list
-					h2 閲覧中のみんな
 
-					include online_user_list
-				// #online-user-list
 			// #left-column
 
-
 			#right-column
-				h2 みんなとチャット
-				.chat-status
+				.caption
+					.caption-title チャット
 				.chat
 					.history
 						//historical submits
@@ -61,7 +57,39 @@ block content
 				.chat-input
 					input.text(type='text', name='', value='')
 				// .chat-input
+
 			// #right-column
+
+			.spacing
+			.spacing
+
+			#online-user-list
+				.caption
+					.caption-title 閲覧中のみんな
+					.caption-title.span.online-num
+				include online_user_list
+			// #online-user-list
+
+			.spacing
+
+			.dropdown.dropdown-status
+				i
+				a.selected(class='#{user.status}', href='#')
+					b
+					| #{user.status}
+				br
+				.dropdown-options
+					.triangle
+					.list
+						- fullStatus.forEach(function(status) {
+							- if (status == user.status)
+								- current = 'current'
+							- else
+								- current = ''
+							a(class='option status #{status} #{current}', data-status='#{status}', href='#')
+								b
+								| #{status}
+						- })
 
 	// .wrap
 

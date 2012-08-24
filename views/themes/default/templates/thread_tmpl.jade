@@ -6,13 +6,13 @@ script#thread_box(type='text/html')
       .posted-by
         | {{ nickname }}
       .date-box
-        | {{ time.hours }}:{{ time.minutes }}
-      .text-box
-        p
-          | {{ detail }}
+        | {{ time }}
+    .text-box
+      p
+        | {{ detail }}
 
 script#thread_notice(type='text/html')
   .notice(data-user="{{ user }}")
-    span.date {{ time.hours }}:{{ time.minutes }}
+    span.date {{ time }}
       |  {{ noticeMsg }}
 
