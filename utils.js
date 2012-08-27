@@ -52,6 +52,42 @@ exports.getDate = function() {
     + [ hours, minutes, seconds ].join(':');
   return str;
 }
+exports.timeParser = function(date) {
+  var ints = {
+      second: 1,
+      minute: 60,
+      hour: 3600,
+      day: 86400,
+      week: 604800,
+      month: 2592000,
+      year: 31536000
+  };
+	var jpints = {
+			second: '秒',
+      minute: '分',
+      hour: '時間',
+      day: '日',
+      week: '週間',
+      month: 'ヶ月',
+      year: '年'
+ 	};
+  time = +date;
+ 
+  var gap = ((+new Date()) - time) / 1000,
+      amount, measure;
+ 
+  for (var i in ints) {
+    if (gap > ints[i]) { measure = i; }
+  }
+ 
+  amount = gap / ints[measure];
+  amount = gap > ints.day ? (Math.round(amount * 100) / 100) : Math.round(amount);
+  amount += jpints[measure] + '前';
+ 
+  return amount;
+};
+
+
 
 exports.dumpObject = function (o) {
 	var str = "";

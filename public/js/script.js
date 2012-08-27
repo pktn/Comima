@@ -32,6 +32,20 @@ $(function() {
 
   $(".fancybox").fancybox({'margin': 0, 'padding': 0});
 
+	//Color picker
+	$('#color-picker').simpleColorPicker({onChangeColor: function(color) {
+			$('.content .chat-input input').css('color', color);
+		}
+	});
+	$('#bgcolor-picker').simpleColorPicker({onChangeColor: function(bgcolor) {
+			$('.content .chat-input input').css('background-color', bgcolor);
+		}
+	});
+	//Image picker
+	$('#image-picker').click(function() {
+		updatePost();
+	});
+
   //Socket.io
   var socket = io.connect();
 
@@ -51,32 +65,33 @@ $(function() {
   });
 
   socket.on('chat history response', function(data) {
-    if(data.history && data.history.length) {
+		var h = data.history;
+
+    if(h) {
       var $lastInput
         , lastInputUser;
 
-      data.history.forEach(function(historyLine) {
-        var time = new Date(historyLine.atTime)
-          , chatBoxData = {
-              nickname: historyLine.from,
-							user_id: historyLine.fromUserId,
-              msg: historyLine.withData,
-							image_url: historyLine.fromImageUrl,
-              type: 'history',
-              time: timeParser(time)
-            };
+      var time = new Date(h.atTime)
+        , chatBoxData = {
+            nickname: h.from,
+			  		user_id: h.fromUserId,
+            msg: h.withData,
+						image_url: h.fromImageUrl,
+            type: 'history',
+						color: h.color,
+						bgcolor: h.bgcolor,
+            timestamp: +time,
+            time: timeParser(time)
+          };
+      $lastInput = $('.chat .history').children().last();
+      lastInputUser = $lastInput.data('user');
 
-        $lastInput = $('.chat .history').children().last();
-        lastInputUser = $lastInput.data('user');
-
-        if($lastInput.hasClass('chat-box') && lastInputUser === chatBoxData.nickname) {
-          $lastInput.append(parseBoxMsg(ich.chat_box_text(chatBoxData)));
-        } else {
-          $('.chat .history').append(parseBox(ich.chat_box(chatBoxData)));
-        }
-
-        $('.chat').scrollTop($('.chat').prop('scrollHeight'));
-      });
+      if($lastInput.hasClass('chat-box') && lastInputUser === chatBoxData.nickname) {
+        $lastInput.find('.text-box p').append('<br>' + h.withData);
+      } else {
+        $('.chat .history').append(parseBox(ich.chat_box(chatBoxData)));
+      	$('.chat').scrollTop($('.chat').prop('scrollHeight'));
+      }
     }
   });
 
@@ -89,12 +104,22 @@ $(function() {
             nickname: h.from,
 	  				user_id: h.fromUserId,
             detail: h.withData,
-		  			image_url: h.fromImageUrl,
-              type: 'history',
-              time: timeParser(time)
+		  			image_url:
+							h.fromImageUrl
+            , type: 'history'
+            , timestamp: +time
+            , time: timeParser(time)
           };
-      $('.thread .history').append(parseBox(ich.thread_box(threadBoxData)));
-      $('.thread').scrollTop($('.thread').prop('scrollHeight'));
+			$lastInput = $('.thread .history').children().last();
+			lastInputUser = $lastInput.data('user');
+
+			// TODO: 行単位で読み込むのをやめる。new threadのときも同様
+			if($lastInput.hasClass('thread-box') && lastInputUser === threadBoxData.nickname) {
+				$lastInput.find('.text-box p').append('<br>' + h.withData);
+      } else {
+      	$('.thread .history').append(parseBox(ich.thread_box(threadBoxData)));
+      	$('.thread').scrollTop($('.thread').prop('scrollHeight'));
+			}
     }
   });
 
@@ -108,17 +133,17 @@ $(function() {
       USERS[data.nickname] = 1;
 
       // Chat notice
-      message = message
-            .replace('$nickname', data.nickname);
+      message = message.replace('$nickname', data.nickname);
 
       // Check update time
       var time = new Date()
         , noticeBoxData = {
-            user: data.nickname,
-            noticeMsg: message,
-            time: timeParser(time)
+          	user: data.nickname
+          , noticeMsg: message
+          , timestamp: +time
+          , time: timeParser(time)
           };
-      
+
       $('.chat .current').append(ich.chat_notice(noticeBoxData));
       $('.chat').scrollTop($('.chat').prop('scrollHeight'));
 
@@ -157,35 +182,41 @@ $(function() {
     // Check update time
     var time = new Date()
       , noticeBoxData = {
-          user: data.nickname,
-          noticeMsg: message,
-          time: timeParser(time)
+        	user: data.nickname
+        , noticeMsg: message
+        , timestamp: +time
+        , time: timeParser(time)
         };
 
-      var $lastChatInput = $('.chat .current').children().last();
+    var $lastChatInput = $('.chat .current').children().last();
       
-      if($lastChatInput.hasClass('notice') && $lastChatInput.data('user') === data.nickname) {
-        $lastChatInput.replaceWith(ich.chat_notice(noticeBoxData));
-      } else {
-        $('.chat .current').append(ich.chat_notice(noticeBoxData));
-        $('.chat').scrollTop($('.chat').prop('scrollHeight'));
-      }
+    if($lastChatInput.hasClass('notice') && $lastChatInput.data('user') === data.nickname) {
+      $lastChatInput.replaceWith(ich.chat_notice(noticeBoxData));
+    } else {
+      $('.chat .current').append(ich.chat_notice(noticeBoxData));
+      $('.chat').scrollTop($('.chat').prop('scrollHeight'));
+    }
   });
 
   socket.on('new msg', function(data) {
-    var time = new Date(),
-        $lastInput = $('.chat .current').children().last(),
-        lastInputUser = $lastInput.data('user');
+    var time = new Date()
+      , $lastInput = $('.chat .current').children().last()
+      , lastInputUser = $lastInput.data('user')
+		  , lastInputTimeAgo = +time - $lastInput.data('timestamp');
     data.type = 'chat';
-    data.time = timeParser(time)
-
-    if($lastInput.hasClass('chat-box') && lastInputUser === data.nickname) {
+    data.timestamp = +time;
+    data.time = timeParser(time);
+console.log(+time - $lastInput.data('timestamp'));
+    if($lastInput.hasClass('chat-box') && 
+				lastInputUser === data.nickname &&
+				+time - $lastInput.data('timestamp') < 10*1000) {
       $lastInput.append(parseBoxMsg(ich.chat_box_text(data)));
     } else {
       $('.chat .current').append(parseBox(ich.chat_box(data)));
     }
 
     $('.chat').scrollTop($('.chat').prop('scrollHeight'));
+		updatePost();
     
     //update title if window is hidden
     if(windowStatus == "hidden") {
@@ -196,14 +227,20 @@ $(function() {
   });
 
   socket.on('new thread', function(data) {
-    var time = new Date();
-
+    var time = new Date(data.time),
+				$lastInput = $('.thread .current').children().last(),
+				lastInputUser = $lastInput.data('user');
     data.type = 'thread';
+		data.timestamp = +time;
     data.time = timeParser(time);
 
-    $('.thread .current').append(parseBox(ich.thread_box(data)));
+		if($lastInput.hasClass('thread-box') && lastInputUser === data.nickname) {
+			$lastInput.find('.text-box p').append('<br>' + data.detail);
+		} else {
+	    $('.thread .current').append(parseBox(ich.thread_box(data)));
+		}
     $('.thread').scrollTop($('.thread').prop('scrollHeight'));
-    
+ 
     //update title if window is hidden
     if(windowStatus == "hidden") {
       afkDeliveredMessages +=1;
@@ -231,6 +268,7 @@ $(function() {
           noticeBoxData = {
             user: data.nickname,
             noticeMsg: message,
+						timestamp: +time,
             time: timeParser(time)
           };
 
@@ -249,6 +287,8 @@ $(function() {
       for(var i = 0; i<len; i++) {
         socket.emit('my msg', {
 					image_url: $('#image_url').text(),
+					color: $(".chat-input input").css('color'),
+					bgcolor: $(".chat-input input").css('background-color'),
           msg: chunks[i]
         });
       }
@@ -266,9 +306,11 @@ $(function() {
 		$('.fancybox-close').click();
 
     var inputText = $('.thread-detail textarea').val().trim();
+
     if(inputText) {
       var chunks = inputText.match(/.{1,1024}/g)
         , len = chunks.length;
+
       for(var i = 0; i<len; i++) {
         socket.emit('my thread', {
 					image_url: $('#image_url').text(),
@@ -288,6 +330,7 @@ $(function() {
     });
   });
 
+	// timeParser
   var timeParser = function(date) {
     var ints = {
         second: 1,
@@ -308,9 +351,13 @@ $(function() {
         year: '年'
  		};
     time = +date;
- 
+
     var gap = ((+new Date()) - time) / 1000,
         amount, measure;
+
+		if (gap < 1) {
+			return 'たった今';
+		}
  
     for (var i in ints) {
       if (gap > ints[i]) { measure = i; }
@@ -447,6 +494,13 @@ $(function() {
 			if (USERS[key]) { num = num + 1; }
 		}
 		$(".online-num").text('（' + num + '）');
+	}
+
+	function updatePost() {
+		$('.chat .history').find('.date-box').each(function(){
+			var timestamp = $(this).parent().data('timestamp');
+			$(this).text(timeParser(new Date(timestamp)));
+		});
 	}
 
   function focusInput() {

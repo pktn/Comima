@@ -50,10 +50,18 @@ block content
 					.caption-title チャット
 				.chat
 					.history
-						//historical submits
+						// historical submits
 					.current
 						//current submits
 				// .chat
+				.chat-tools
+					button#bgcolor-picker(type='button')
+						背景色
+					button#color-picker(type='button')
+						文字色
+					button#image-picker(type='button')
+						スタンプ
+					// button
 				.chat-input
 					input.text(type='text', name='', value='')
 				// .chat-input
@@ -101,6 +109,7 @@ block content
 	include templates/thread_tmpl
 
 	script(defer, src="/js/libs/fancy-box/jquery.fancybox.pack.js")
+	script(defer, src="/js/libs/jquery.simple-color-picker.js")
 	script(defer, src="/js/plugins.js")
 	script(defer, src="/js/libs/ICanHaz.min.js")
 	script(src="/socket.io/socket.io.js")

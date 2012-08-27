@@ -47,7 +47,7 @@ io.set('authorization', function (hsData, accept) {
 io.configure(function() {
   io.set('store', new sio.RedisStore);
   io.enable('browser client minification');
-  io.enable('browser client gzip');
+  //io.enable('browser client gzip'); // TODO
 });
 
 
@@ -97,27 +97,31 @@ io.sockets.on('connection', function (socket) {
         from: nickname,
 				fromUserId: user_id,
         atTime: new Date(),
+				color: data.color,
+				bgcolor: data.bgcolor,
         withData: data.msg
       }
-
       chatlogWriteStream.write(JSON.stringify(chatlogRegistry) + "\n");
       io.sockets.in(room_id).emit('new msg', {
 				user_id: user_id,
         nickname: nickname,
 				image_url: data.image_url,
+				color: data.color,
+				bgcolor: data.bgcolor,
         msg: data.msg
       });        
     }   
   });
 
   socket.on('my thread', function(data) {
+    var time = new Date();
     var no_empty = data.detail.replace("\n","");
     if(no_empty.length > 0) {
       var threadlogRegistry = {
         type: 'message',
         from: nickname,
 				fromUserId: user_id,
-        atTime: new Date(),
+        atTime: time,
         withData: data.detail
       }
       threadlogWriteStream.write(JSON.stringify(threadlogRegistry) + "\n");
@@ -126,7 +130,8 @@ io.sockets.on('connection', function (socket) {
 				user_id: user_id,
         nickname: nickname,
 				image_url: data.image_url,
-        detail: data.detail
+        detail: data.detail,
+        time: time
       });        
     }   
   });
@@ -143,19 +148,18 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('chat history request', function() {
-    var history = [];
-    var tail = require('child_process').spawn('tail', ['-n', 5, chatlogFileName]);
+    var tail = require('child_process').spawn(
+			'tail', ['-n', config.chat.maxhistoryline, chatlogFileName]
+		);
     tail.stdout.on('data', function (data) {
       var lines = data.toString('utf-8').split("\n");
-      
       lines.forEach(function(line, index) {
         if(line.length) {
           var historyLine = JSON.parse(line);
 					utils.getUserInfo(historyLine.fromUserId, function(user) {
 						historyLine.fromImageUrl = user.image_url;
- 			      history.push(historyLine);
   	  			socket.emit('chat history response', {
-    	    		history: history
+    	    		history: historyLine
 						});
 					});
         }
@@ -164,7 +168,9 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('thread history request', function() {
-    var tail = require('child_process').spawn('tail', ['-n', 5, threadlogFileName]);
+    var tail = require('child_process').spawn(
+			'tail', ['-n', config.thread.maxhistoryline, threadlogFileName]
+		);
     tail.stdout.on('data', function (data) {
       var lines = data.toString('utf-8').split("\n");
       lines.forEach(function(line, index) {

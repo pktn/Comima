@@ -36,5 +36,11 @@
   },
 	"guest": {
 		"image_url" : "../img/icon-guest-user.png"
+	},
+	"chat": {
+		"maxhistoryline" : 20
+	},
+	"thread": {
+		"maxhistoryline" : 20
 	}
 }
