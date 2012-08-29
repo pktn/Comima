@@ -402,7 +402,7 @@ header a:hover{color: #ccc}
 
 /* room */
 .content .room{ float: left; width: 100%; height: 535px; z-index: 100; overflow-y: scroll;  }
-.content .room .room-box{ position: relative; padding:  16px 22px; display: block; border-bottom: 1px solid #eee; padding-left: 7.6em; background-color: #BEDBEB; min-height: 65px; margin: 1px; }
+.content .room .room-box{ float: left; padding: 10px; width: 620px; display: block; border-bottom: 1px solid #eee; background-color: #BEDBEB; min-height: 80px; margin: 1px; }
 .content .room .room-box p {width: 490px; border-radius: 4px; background-color: #fff; padding: 10px; margin:4px 0;}
 .content .room .room-box:nth-child(2n){background-color: #f1f1f1}
 .content .room .room-box h5{margin-top: 0; font-size: 1em; margin-bottom: 1em}
@@ -425,6 +425,10 @@ header a:hover{color: #ccc}
   background-image: -o-linear-gradient(#fdfdfd 4.4%, #dfe2e9);	
 }
 .content .room-input input.text{height: auto; max-height: 1.2em; background: white url('../img/icon-room.png') 10px center no-repeat; border-radius: 4px; width: 93%; padding: 1% 1% 1% 3%; display: block; margin: 1% 1.5%}
+.content .room .room-box .room-logo {float:left;}
+.content .room .room-box .room-logo img {height:75px;}
+.content .room .room-box .room-info .room-name {float:left; margin:5px; font-size:1.4em;}
+.content .room .room-box .room-info .room-name {float:left; margin:5px; font-size:1.4em;}
 
 
 /* thread */
@@ -699,7 +703,7 @@ header .room-title img { margin-right: 10px;}
 .spacing { clear:both; height:10px;}
 
 /* post room */
-#thread-list .post-room {float:right; padding:0 20px;}
+.post-room {float:right; padding:0 20px;}
 
 /* post thread */
 #thread-list .post-thread {float:right; padding:0 20px;}

@@ -225,11 +225,7 @@ exports.getPublicRoomsInfo = function(client, fn) {
         // prevent for a room info deleted before this check
         if(!err && room && Object.keys(room).length) {
           // add room info
-          rooms.push({
-            key: room.key || room.name, // temp
-            name: room.name,
-            online: room.online || 0
-          });
+          rooms.push(room);
 
           // check if last room
           if(rooms.length == len) fn(rooms);
@@ -296,7 +292,10 @@ exports.enterRoom = function(req, res, client, room, users, rooms){
     },
     users_list: users
   });
+
   res.render('room');
+
+	client.hincrby('rooms:' + room.key + ':info', 'total_visits', 1);
 
 	log.debug("+++ enterRoom end +++");
 };
@@ -322,4 +321,8 @@ exports.getGuestUserId = function (client) {
 	client.incrby('comima:guest_num', 1, function(err, num) {
     return 
   });
+}
+
+exports.setEnterRoomLog = function (req, res) {
+	
 }

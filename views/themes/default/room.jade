@@ -12,7 +12,7 @@ block content
 
 			// -- post form
 			#thread.modal.modal-thread(style='display: none')
-					if (room.name == 'lobby')
+					if (room.id === 'lobby')
 						// lobby -> room
 						.modal-content
 							h2 ルーム新規作成
@@ -41,7 +41,7 @@ block content
 			// left column
 			//
 			#left-column
-				if (room.name == 'lobby')
+				if (room.key === 'lobby')
 					#room-list
 						.caption
 								.caption-title ルーム一覧
@@ -55,10 +55,19 @@ block content
 									.room-box
 										.room-logo
 											img(src='/img/rooms/'+room.key+'.gif')
-										a(href='/rooms/' + room.key, class="#{roomClass}", title="#{room.name}")
-											| #{room.name.substr(0,20)}
-										span.users-online
-											| #{room.online} 人
+										.room-info
+											.room-name
+												a(href='/rooms/' + room.key, class="#{roomClass}", title="#{room.name}")
+													| #{room.name.substr(0,20)}
+											.room-admin
+												オーナー：#{room.admin}
+											.room-detail
+												#{room.detail}
+											.room-online
+												span.users-online
+													| オンライン #{room.online} 人
+											.room-total-visits
+												これまでの訪問者数：#{room.total_visits} 人
 					.inactive
 						input(type='checkbox', id="hide-inactive", checked) 
 						label(for="hide-inactive") Hide inactive
@@ -86,7 +95,7 @@ block content
 			//
 			#right-column
 				.caption
-					.caption-title 全体チャット
+					.caption-title ロビーチャット
 				.chat
 					.history
 						// historical submits
