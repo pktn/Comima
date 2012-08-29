@@ -1,10 +1,10 @@
-$.fn.simpleColorPicker = function(options) {
+$.fn.simpleImagePicker = function(options) {
     var defaults = {
-        imagesPerLine: 8,
-        images: ['test.jpg', 'test.png'],
+        imagesPerLine: 2,
+        images: ['1.gif', '2.gif', '3.gif', '4.gif'], // TODO
         showEffect: '',
         hideEffect: '',
-        onChangeColor: false
+        onClickImage: false
     };
 
     var opts = $.extend(defaults, options);
@@ -25,23 +25,29 @@ $.fn.simpleColorPicker = function(options) {
 
             if (i > 0 && breakLine && $.browser && $.browser.msie && $.browser.version <= 7) {
                 breakLine = '';
-                imagesMarkup += '<li style="float: none; clear: both; overflow: hidden; background-color: #fff; display: block; height: 1px; line-height: 1px; font-size: 1px; margin-bottom: -2px;"></li>';
+                imagesMarkup += 
+									'<li style="float: none; clear: both; overflow: hidden; background-color: #fff; display: block; height: 1px; line-height: 1px; font-size: 1px; margin-bottom: -2px;"></li>';
             }
-
-            imagesMarkup += '<li id="' + prefix + 'color-' + i + '" class="color-box" style="' + breakLine + 'background-color: ' + item + '" title="' + item + '"></li>';
+            imagesMarkup += 
+							'<li id="' + prefix + 'image-' + i + '"' +
+							' class="image-box"' +
+							' title="' + item + '"' + 
+							' style="background: url(\'../img/stamps/' + item + '\') no-repeat center"' +
+							'></li>';
         }
 
-        var box = $('<div id="' + prefix + 'color-picker" class="color-picker" style="position: absolute; left: 0px; top: 0px;"><ul>' + imagesMarkup + '</ul><div style="clear: both;"></div></div>');
+        var box = $('<div id="' + prefix + 'image-picker" class="image-picker" style="position: absolute; left: 0px; top: 0px;"><ul>' + imagesMarkup + '</ul><div style="clear: both;"></div></div>');
         $('body').append(box);
+
         box.hide();
 
-        box.find('li.color-box').click(function() {
+        box.find('li.image-box').click(function() {
             if (txt.is('input')) {
               txt.val(opts.images[this.id.substr(this.id.indexOf('-') + 1)]);
               txt.blur();
             }
-            if ($.isFunction(defaults.onChangeColor)) {
-              defaults.onChangeColor.call(txt, opts.images[this.id.substr(this.id.indexOf('-') + 1)]);
+            if ($.isFunction(defaults.onClickImage)) {
+              defaults.onClickImage.call(txt, opts.images[this.id.substr(this.id.indexOf('-') + 1)]);
             }
             hideBox(box);
         });

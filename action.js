@@ -22,11 +22,11 @@ exports.genRoomKey = function(roomName) {
  */
 
 exports.validRoomName = function(req, res, fn) {
-  var roomKey = exports.genRoomKey(req.body.room_name)
+  var roomKey = exports.genRoomKey(req.body.room_id)
     , keyLen = roomKey.length
     , nameLen = req.body.room_name.length;
 
-  if(nameLen < 255 && keyLen >0) {
+  if(nameLen < 255 && keyLen > 0 && keyLen < 20) {
     fn(roomKey);
   } else {
     res.redirect('back');
@@ -38,9 +38,10 @@ exports.validRoomName = function(req, res, fn) {
  */
 
 exports.roomExists = function(req, res, client, roomKey, fn) {
-  client.exists('rooms:' + req.body.roomKey + ':info', function(err, exists) {
+  client.exists('rooms:' + roomKey + ':info', function(err, exists) {
     if(!err && exists) {
-      res.redirect( '/rooms/' + req.body.roomKey );
+			var redirectTo = (roomKey === 'lobby') ? '/' : '/rooms/' + roomKey;
+      res.redirect(redirectTo);
     } else {
       fn()
     }
@@ -54,7 +55,8 @@ exports.createRoom = function(req, res, client, roomKey) {
   var room = {
     key: roomKey,
     name: req.body.room_name,
-    admin: req.body.nickname,
+		detail: req.body.detail, 
+    admin: req.session.nickname,
     locked: 0,
     online: 0
   };
@@ -63,9 +65,8 @@ exports.createRoom = function(req, res, client, roomKey) {
   client.hmset('rooms:' + roomKey + ':info', room, function(err, ok) {
     if(!err && ok) {
       client.sadd('comima:public:rooms', roomKey);
-			// store nickname
-			req.session.nickname = req.body.nickname;
-      res.redirect('/rooms/' + roomKey);
+			var redirectTo = (roomKey === 'lobby') ? '/' : '/rooms/' + roomKey;
+      res.redirect(redirectTo);
     } else {
       res.send(500);
     }
@@ -80,10 +81,10 @@ exports.createRoom = function(req, res, client, roomKey) {
 exports.getCominyUserInfo = function(req, res, next){
 	log.debug("+++ getCominyUserInfo +++");
 
+	var sid; // Cominy Session id
+
 	if (req.headers.cookie) {
 		var cookieArray = req.headers.cookie.split(';') ;
-		var sid;
-
 		for(var i = 0; i < cookieArray.length; i++){
 			if( cookieArray[i].indexOf(config.cominy.cookiekey) !== -1){
 				sid = cookieArray[i].split('=')[1];
@@ -91,11 +92,13 @@ exports.getCominyUserInfo = function(req, res, next){
 		}
 	}
 
+
+	// if Cominy Session exists
 	if (sid) {
-		// Fetch Cominy Session File
 		var xmlrpc = require('xmlrpc');
 		var fs = require('fs');
 
+		// Fetch Cominy Session File
 		fs.readFile(config.cominy.sessionfilepath + sid, function(err, data){
   		if(err) {
 				log.debug("could not open file : " + err);
@@ -116,7 +119,6 @@ exports.getCominyUserInfo = function(req, res, next){
 				param.target_c_member_id = param.my_c_member_id = uid;
 				var rpcclient = xmlrpc.createClient(config.cominy.rpcclient);
 
-				// Sends a method call to the XML-RPC server
 	   		rpcclient.methodCall(config.cominy.rpcmethod, [param], function (error, value) {
 					// Results of the method response
 					// Store nickname and image_url
@@ -130,8 +132,15 @@ exports.getCominyUserInfo = function(req, res, next){
 			}, 1000)
 		});
 
+	// guest
 	} else {
+
+		// remove cominy user info if left
+		if (!req.session.is_guest) {
+			req.session.user_id = req.session.nickname = req.session.image_url = false;
+		} 
 		req.session.is_guest = true;
+
 		next();
 	}
 };
@@ -149,36 +158,41 @@ exports.getUserInfo = function(req, res, client, next) {
   	  req.session.user_id = req.session.nickname = 'guest-' + num;
 			req.session.image_url = config.guest.image_url;
 			req.session.status = 'available';
+			getUserInfo(req, res, client, next);
 	  });
+	} else {
+		getUserInfo(req, res, client, next);
 	}
 
-	// status
-	req.session.status = req.session.status || 'available';
+	function getUserInfo(req, res, client, next) {
+		// status
+		req.session.status = req.session.status || 'available';
 
-	client.hgetall('users:' + req.session.user_id + ':info', function(err, user) {
-		// first access or if user info is changed
-		if (!user || 
-				user.image_url !== req.session.image_url ||
-				user.nickname  !== req.session.nickname) {
+		client.hgetall('users:' + req.session.user_id + ':info', function(err, user) {
+		// first access OR when user info is changed
+			if (!user || 
+					user.image_url !== req.session.image_url ||
+					user.nickname  !== req.session.nickname) {
 
-			// set user info
-			client.hmset(
-				'users:' + req.session.user_id + ':info',
-				'user_id', req.session.user_id,
-				'image_url', req.session.image_url,
-				'nickname', req.session.nickname,
-				'status', req.session.status,
+				// set user info
+				client.hmset(
+					'users:' + req.session.user_id + ':info',
+					'user_id', req.session.user_id,
+					'image_url', req.session.image_url,
+					'nickname', req.session.nickname,
+					'status', req.session.status,
 
-				function(err, ok) {
-					log.debug("+++ getUserInfo end (set value) +++");
-					next();
-				}
-			);
-		} else {
-			log.debug("+++ getUserInfo end (not set value) +++");
-			next();
-		}
-	});
+					function(err, ok) {
+						log.debug("+++ getUserInfo end (set value) +++");
+						next();
+					}
+				);
+			} else {
+				log.debug("+++ getUserInfo end (not set value) +++");
+				next();
+			}
+		});
+	}
 };
 
 /*

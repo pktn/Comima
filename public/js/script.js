@@ -41,9 +41,24 @@ $(function() {
 			$('.content .chat-input input').css('background-color', bgcolor);
 		}
 	});
+
 	//Image picker
-	$('#image-picker').click(function() {
-		updatePost();
+	$('#image-picker').simpleImagePicker({onClickImage: function(image) { 
+    	if(image) {
+				var stamp = image.match(/(\d+)\.gif/);
+				var stamp_tag = '[s:' + stamp[1] + ']';
+      	var chunks = stamp_tag.match(/.{1,1024}/g)
+        	, len = chunks.length;
+	      for(var i = 0; i<len; i++) {
+  	      socket.emit('my msg', {
+						image_url: $('#image_url').text(),
+						color: $(".chat-input input").css('color'),
+						bgcolor: $(".chat-input input").css('background-color'),
+          	msg: chunks[i]
+	        });
+  	    }
+			}
+		}
 	});
 
   //Socket.io
@@ -64,6 +79,9 @@ $(function() {
 		updateOnlineNum();
   });
 
+	/*
+	* chat history response
+	*/
   socket.on('chat history response', function(data) {
 		var h = data.history;
 
@@ -87,14 +105,18 @@ $(function() {
       lastInputUser = $lastInput.data('user');
 
       if($lastInput.hasClass('chat-box') && lastInputUser === chatBoxData.nickname) {
-        $lastInput.find('.text-box p').append('<br>' + h.withData);
+        $lastInput.find('.text-box p').append('<br>' + textParser(h.withData));
       } else {
         $('.chat .history').append(parseBox(ich.chat_box(chatBoxData)));
-      	$('.chat').scrollTop($('.chat').prop('scrollHeight'));
+				// delay for stamp message
+				setTimeout(function(){$('.chat').scrollTop($('.chat').prop('scrollHeight'));}, 1000);
       }
     }
   });
 
+	/*
+	* thread history response
+	*/
   socket.on('thread history response', function(data) {
     var h = data.historyLine;
 
@@ -123,6 +145,9 @@ $(function() {
     }
   });
 
+	/*
+	* enter new user
+	*/
   socket.on('new user', function(data) {
     var message = "$nickname さんが入室しました。";
 
@@ -155,6 +180,9 @@ $(function() {
 		updateOnlineNum();
   });
 
+	/*
+	* update user info (status)
+	*/
   socket.on('user-info update', function(data) {
     var message = "$nickname は $status です。";
 
@@ -198,26 +226,35 @@ $(function() {
     }
   });
 
+	/*
+	* receive new chat message
+	*/
   socket.on('new msg', function(data) {
     var time = new Date()
       , $lastInput = $('.chat .current').children().last()
       , lastInputUser = $lastInput.data('user')
-		  , lastInputTimeAgo = +time - $lastInput.data('timestamp');
+		  , lastInputTimeAgo = +time - $lastInput.data('timestamp')
+			;
     data.type = 'chat';
     data.timestamp = +time;
     data.time = timeParser(time);
-console.log(+time - $lastInput.data('timestamp'));
-    if($lastInput.hasClass('chat-box') && 
+
+   console.log($('.chat').prop('scrollHeight'));
+   console.log($('.chat .current .chat-box').height());
+		// append text to last block
+    if( $lastInput.hasClass('chat-box') &&
 				lastInputUser === data.nickname &&
-				+time - $lastInput.data('timestamp') < 10*1000) {
+				+time - $lastInput.data('timestamp') < 10*1000 ) { // TODO
       $lastInput.append(parseBoxMsg(ich.chat_box_text(data)));
+		// add new block
     } else {
       $('.chat .current').append(parseBox(ich.chat_box(data)));
+			updatePost();
     }
 
-    $('.chat').scrollTop($('.chat').prop('scrollHeight'));
-		updatePost();
-    
+		// delay for stamp message
+		setTimeout(function(){$('.chat').scrollTop($('.chat').prop('scrollHeight'));}, 10);
+ 
     //update title if window is hidden
     if(windowStatus == "hidden") {
       afkDeliveredMessages +=1;
@@ -226,6 +263,9 @@ console.log(+time - $lastInput.data('timestamp'));
 
   });
 
+	/*
+	* receive new thread
+	*/
   socket.on('new thread', function(data) {
     var time = new Date(data.time),
 				$lastInput = $('.thread .current').children().last(),
@@ -249,6 +289,9 @@ console.log(+time - $lastInput.data('timestamp'));
 
   });
 
+	/*
+	* user leave
+	*/
   socket.on('user leave', function(data) {
     var message = "$nickname さんが退室しました。";
     for (var nickname in USERS) {
@@ -279,6 +322,9 @@ console.log(+time - $lastInput.data('timestamp'));
 		updateOnlineNum();
   });
 
+	/*
+	* send chat message
+	*/
   $(".chat-input input").keypress(function(e) {
     var inputText = $(this).val().trim();
     if(e.which == 13 && inputText) {
@@ -298,6 +344,44 @@ console.log(+time - $lastInput.data('timestamp'));
     }
   });
 
+	/*
+	* post new room
+	*/
+  $(".post-room").click(function(e){
+    $(this).hide().after('<p class="posting-room">しばらくおまちください</p>').delay(2000).hide();
+		// TODO
+		$('.posting-room').hide();
+		$('.post-room').show();
+		$('.fancybox-close').click();
+
+    var inputText = $('.room-detail textarea').val().trim();
+
+    if(inputText) {
+      var chunks = inputText.match(/.{1,1024}/g)
+        , len = chunks.length;
+
+      for(var i = 0; i<len; i++) {
+        socket.emit('my thread', { // TODO
+					image_url: $('#image_url').text(),
+          detail: chunks[i]
+        });
+      }
+      $('.room-detail textarea').val('');
+
+      return false;
+    }
+  });
+
+
+  $('.dropdown-status .list a.status').click(function(e) {
+    socket.emit('set status', {
+      status: $(this).data('status')
+    });
+  });
+
+	/*
+	* post new thread
+	*/
   $(".post-thread").click(function(e){
     $(this).hide().after('<p class="posting-thread">しばらくおまちください</p>').delay(2000).hide();
 		// TODO
@@ -388,7 +472,7 @@ console.log(+time - $lastInput.data('timestamp'));
     return boxMsg.html(textParser(msg));
   };
 
-  var patterns = {
+  var emoticPatterns = {
     angry: /\&gt;:-o|\&gt;:o|\&gt;:-O|\&gt;:O|\&gt;:-\(|\&gt;:\(/g,
     naughty: /\&gt;:-\)|\&gt;:\)|\&gt;:-\&gt;|\&gt;:\&gt;/g,
     sick: /:-\&amp;|:\&amp;|=\&amp;|=-\&amp;|:-@|:@|=@|=-@/g,
@@ -424,12 +508,20 @@ console.log(+time - $lastInput.data('timestamp'));
     hearteyes: /\&lt;3/g
   };
 
+	var stampPatterns = {
+		stamp: /\[s:(\d+)\]/g
+	};
+
   var emoticHTML = "<span class='emoticon $emotic'></span>";
+	var stampHTML = "<img src='../img/stamps/$1.gif'>";
 
   var injectEmoticons = function(text) {
-    for(var emotic in patterns) {
-      text = text.replace(patterns[emotic],emoticHTML.replace("$emotic", "emoticon-" + emotic));
+    for(var emotic in emoticPatterns) {
+      text = text.replace(emoticPatterns[emotic],emoticHTML.replace("$emotic", "emoticon-" + emotic));
     }
+    for(var stamp in stampPatterns) {
+      text = text.replace(stampPatterns[stamp],stampHTML);
+		}
     return text;
   }
 
@@ -498,6 +590,10 @@ console.log(+time - $lastInput.data('timestamp'));
 
 	function updatePost() {
 		$('.chat .history').find('.date-box').each(function(){
+			var timestamp = $(this).parent().data('timestamp');
+			$(this).text(timeParser(new Date(timestamp)));
+		});
+		$('.chat .current').find('.date-box').each(function(){
 			var timestamp = $(this).parent().data('timestamp');
 			$(this).text(timeParser(new Date(timestamp)));
 		});

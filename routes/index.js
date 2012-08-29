@@ -11,10 +11,21 @@ var app = module.parent.exports.app
 /*
  * Homepage
  */
-
-app.get('/', function(req, res, next) {
-		res.render('index');
+app.get('/', action.restrict, function(req, res) {
+	req.params.id = 'lobby';
+	action.getCominyUserInfo(req, res, function() {
+		action.getUserInfo(req, res, client, function() {
+			action.getRoomInfo(req, res, client, function(room) {
+				action.getUsersInRoom(req, res, client, room, function(users) {
+					action.getPublicRoomsInfo(client, function(rooms) {
+						action.enterRoom(req, res, client, room, users, rooms);
+					});
+				});
+			});
+		});
+	});
 });
+
 
 /*
  * Rooms list

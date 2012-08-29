@@ -28,13 +28,23 @@ io.set('authorization', function (hsData, accept) {
       if(err || !session) {
         return accept('Error retrieving session!', false);
       }
+
+			var roomStr;
+
+			// TODO
+			if (hsData.headers.referer.match(/\/rooms\/(?:([^\/]+?))\/?$/g)) {
+				roomStr = hsData.headers.referer;
+			} else {
+				roomStr = hsData.headers.referer + 'rooms/lobby';
+			}
+
       hsData.comima = {
         user: {
 						user_id: session.user_id
 					, nickname: session.nickname
 					, image_url: session.image_url
 				},
-        room: /\/rooms\/(?:([^\/]+?))\/?$/g.exec(hsData.headers.referer)[1]
+        room: /\/rooms\/(?:([^\/]+?))\/?$/g.exec(roomStr)[1]
       };
       return accept(null, true);
       

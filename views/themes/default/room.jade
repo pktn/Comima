@@ -4,33 +4,75 @@ block content
 	.wrap
 		header
 			.room-title
-				img(src='/img/logo-cominy.png')
+				a(href='/')
+					img(src='/img/logo-cominy.png')
 				b #{room.name}
-				の集会所
 			//include rooms_dropdown
 			include user_box
 
-			// -- post thread form
+			// -- post form
 			#thread.modal.modal-thread(style='display: none')
-					.modal-content
-						h2 スレッド新規作成
-					.thread-detail
-						textarea(name='', value='')
-					.modal-footer
-						a.button.post-thread(href='#') スレッドを立てる
-			// -- post thread form
-
+					if (room.name == 'lobby')
+						// lobby -> room
+						.modal-content
+							h2 ルーム新規作成
+						form(method="POST",action="/create")
+							p
+								.create-room
+									input.text-grey(type='text', name='room_id', placeholder='ルームID')
+									input.text-grey(type='text', name='room_name', placeholder='ルーム名')
+									textarea(name='detail', value='')
+								.modal-footer
+									input.button(type='submit', value='ルームを作成する')
+					else
+						// room -> thread
+						.modal-content
+							h2 スレッド新規作成
+						.thread-detail
+							textarea(name='', value='')
+						.modal-footer
+							a.button.post-thread(href='#') スレッドを立てる
+		//
+		// main
+		//
 		.content(role='main')
+
+			//
+			// left column
+			//
+
 			#left-column
-				#thread-list
-					.caption
-						.caption-title 募集スレッド
-						.post-thread
-							a.fancybox(href='#thread')
-								スレッド新規作成
-					// .caption
-					.thread
-						// thread-content
+				if (room.name == 'lobby')
+					#room-list
+						.caption
+								.caption-title ルーム一覧
+								.post-room
+									a.fancybox(href='#room')
+										ルーム新規作成
+						.room
+							.room-list.hide-inactive
+								each room,index in rooms
+									- var roomClass = room.online > 0 ? "room-active" : "room-inactive";
+									.room-box
+										.room-logo
+											img(src='/img/rooms/'+room.key+'.gif')
+										a(href='/rooms/' + room.key, class="#{roomClass}", title="#{room.name}")
+											| #{room.name.substr(0,20)}
+										span.users-online
+											| #{room.online} 人
+					.inactive
+						input(type='checkbox', id="hide-inactive", checked) 
+						label(for="hide-inactive") Hide inactive
+				else
+					#thread-list
+						.caption
+								.caption-title スレッド一覧
+								.post-thread
+									a.fancybox(href='#thread')
+										スレッド新規作成
+						// .caption
+						.thread
+							// thread-content
 						.history
 							//historical submits
 						.current
@@ -40,14 +82,13 @@ block content
 					.line-thread
 					.line-thread.second
 
-				// #thread-list
-
-
-			// #left-column
+			//
+			// right column
+			//
 
 			#right-column
 				.caption
-					.caption-title チャット
+					.caption-title 全体チャット
 				.chat
 					.history
 						// historical submits
@@ -110,6 +151,7 @@ block content
 
 	script(defer, src="/js/libs/fancy-box/jquery.fancybox.pack.js")
 	script(defer, src="/js/libs/jquery.simple-color-picker.js")
+	script(defer, src="/js/libs/jquery.simple-image-picker.js")
 	script(defer, src="/js/plugins.js")
 	script(defer, src="/js/libs/ICanHaz.min.js")
 	script(src="/socket.io/socket.io.js")
