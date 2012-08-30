@@ -13,8 +13,8 @@ exports.restrict = function(req, res, next){
  * Generates a URI Like key for a room
  */       
 
-exports.genRoomKey = function(roomName) {
-  return roomName.replace(/[^a-zA-Z0-9-_]/g, '');
+exports.genRoomKey = function(roomKey) {
+  return roomKey.replace(/[^a-zA-Z0-9-_]/g, '');
 };
 
 /*
@@ -40,8 +40,7 @@ exports.validRoomName = function(req, res, fn) {
 exports.roomExists = function(req, res, client, roomKey, fn) {
   client.exists('rooms:' + roomKey + ':info', function(err, exists) {
     if(!err && exists) {
-			var redirectTo = (roomKey === 'lobby') ? '/' : '/rooms/' + roomKey;
-      res.redirect(redirectTo);
+			res.redirect('/rooms/' + roomKey);
     } else {
       fn()
     }
@@ -56,11 +55,12 @@ exports.createRoom = function(req, res, client, roomKey) {
     key: roomKey,
     name: req.body.room_name,
 		detail: req.body.detail, 
-    admin: req.session.nickname,
+    admin: req.body.user_id,
     locked: 0,
-    online: 0
+    online: 0,
+		total_visits: 1,
+		reg_date: +new Date() // timestamp
   };
-
 	// save
   client.hmset('rooms:' + roomKey + ':info', room, function(err, ok) {
     if(!err && ok) {
@@ -91,7 +91,6 @@ exports.getCominyUserInfo = function(req, res, next){
 			}
 		}
 	}
-
 
 	// if Cominy Session exists
 	if (sid) {
@@ -196,39 +195,31 @@ exports.getUserInfo = function(req, res, client, next) {
 };
 
 /*
- * Get Room Info
+ * Get Rooms Info
  */
 
-exports.getRoomInfo = function(req, res, client, fn) { 
-	log.debug("+++ getRoomInfo start +++");
-
-  client.hgetall('rooms:' + req.params.id + ':info', function(err, room) {
-    if(!err && room && Object.keys(room).length) fn(room);
-    else res.redirect('back');
-  });
-
-	log.debug("+++ getRoomInfo end +++");
-};
-
-exports.getPublicRoomsInfo = function(client, fn) {
-	log.debug("+++ getPublicRoomsInfo start +++");
+exports.getRoomsInfo = function(client, next) {
+	log.debug("+++ getRoomsInfo start +++");
 
   client.smembers('comima:public:rooms', function(err, publicRooms) {
+
     var rooms = []
       , len = publicRooms.length;
-    if(!len) fn([]);
+
+    if(!len) next([]);
 
     publicRooms.sort(exports.caseInsensitiveSort);
-
     publicRooms.forEach(function(roomKey, index) {
       client.hgetall('rooms:' + roomKey + ':info', function(err, room) {
         // prevent for a room info deleted before this check
         if(!err && room && Object.keys(room).length) {
           // add room info
+					var timestamp = +(room.reg_date);
+					room.time = utils.timeParser(new Date(timestamp));
           rooms.push(room);
 
           // check if last room
-          if(rooms.length == len) fn(rooms);
+          if(rooms.length == len) next(rooms);
         } else {
           // reduce check length
           len -= 1;
@@ -236,39 +227,58 @@ exports.getPublicRoomsInfo = function(client, fn) {
       });
     });
   });
-	log.debug("+++ getPublicRoomsInfo end +++");
+
+	log.debug("+++ getRoomsInfo end +++");
 };
 
 /*
- * Get connected users at room
+ * Get Rooms User Info
  */
 
-exports.getUsersInRoom = function(req, res, client, room, fn) {
-	log.debug("+++ getUserInRoom start +++");
+exports.getRoomsUserInfo = function(client, rooms, next) {
+	log.debug("+++ getRoomsUserInfo start +++");
 
-  client.smembers('rooms:' + req.params.id + ':online', function(err, online_users) {
-    var users = [];
-    online_users.forEach(function(user_id, index) {
-			utils.getUserInfo(user_id, function(user) {
-	      users.push(user);
-			});
-    });
+	rooms.forEach(function(room, index) {
+		var users = room.users = [];
 
-    fn(users);
-  });
-	log.debug("+++ getUserInRoom end +++");
-};
+		utils.getUserInfo(room.admin, function(admin) {
+			room.admin = admin;
+		});
+
+		client.smembers('rooms:' + room.key + ':online', function(err, online_users) {
+				online_users.forEach(function(user_id, index) {
+					utils.getUserInfo(user_id, function(user) {
+						users.push(user);
+						// last user
+						if (online_users.length === users.length) {
+							room.users = users;
+							// last room
+							if (rooms.length === index + 1) {
+								next(rooms);
+							}
+						}
+					});
+				});
+				// last room
+				if (rooms.length === index + 1) {
+					next(rooms);
+				}
+		});
+	});
+
+	log.debug("+++ getRoomsUserInfo end +++");
+}
 
 /*
  * Get public rooms
  */
 
-exports.getPublicRooms = function(client, fn){
+exports.getPublicRooms = function(client, next){
 	log.debug("+++ getPublicRooms start +++");
 
   client.smembers("comima:public:rooms", function(err, rooms) {
-    if (!err && rooms) fn(rooms);
-    else fn([]);
+    if (!err && rooms) next(rooms);
+    else next([]);
   });
 
 	log.debug("+++ getPublicRooms end +++");
@@ -278,24 +288,35 @@ exports.getPublicRooms = function(client, fn){
  * Enter to a room
  */
 
-exports.enterRoom = function(req, res, client, room, users, rooms){
+exports.enterRoom = function(req, res, client, rooms){
 	log.debug("+++ enterRoom start +++");
 
-  res.locals({
-    room: room,
-    rooms: rooms,
-    user: {
+	// data of current room
+	var current_users = [];
+	var current_room = {};
+	rooms.forEach(function(room, index) {
+		if (req.params.id === room.key) {
+			current_users = room.users;
+			current_room = room;
+		}
+	});
+	// local variables for html template
+	res.locals({
+    room: current_room,
+   	rooms: rooms,
+   	users: current_users,
+	  user: {
 			user_id: req.session.user_id,
-      nickname: req.session.nickname,
+   	  nickname: req.session.nickname,
 			image_url: req.session.image_url,
-      status: req.session.status
-    },
-    users_list: users
-  });
+     	status: req.session.status
+	  }
+	});
+
+	// increment total visits
+	client.hincrby('rooms:' + current_room.key + ':info', 'total_visits', 1);
 
   res.render('room');
-
-	client.hincrby('rooms:' + room.key + ':info', 'total_visits', 1);
 
 	log.debug("+++ enterRoom end +++");
 };

@@ -2,7 +2,7 @@
 	.online-header
 		b オンライン
 	.people
-		-users_list.forEach(function(user) {
+		-users.forEach(function(user) {
 			.user-img
 				a(class='#{ user.status }', href='#{ user.user_id }', data-nickname='#{ user.nickname }')
 					img(src='#{ user.image_url }')

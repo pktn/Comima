@@ -4,9 +4,16 @@ block content
 	.wrap
 		header
 			.room-title
-				a(href='/')
-					img(src='/img/logo-cominy.png')
-				b #{room.name}
+				if (room.key === 'lobby')
+					a(href='/')
+						img(src='/img/logo-cominy.png')
+					b #{room.name}
+				else
+					a(href='/rooms/#{room.key}')
+						img(src='/img/rooms/#{room.key}.gif')
+					b #{room.name}
+			.room-detail
+				| #{room.detail}
 			//include rooms_dropdown
 			include user_box
 
@@ -41,10 +48,12 @@ block content
 			// left column
 			//
 			#left-column
+
 				if (room.key === 'lobby')
 					#room-list
 						.caption
 								.caption-title ルーム一覧
+									| （#{rooms.length}）
 								.post-room
 									a.fancybox(href='#room')
 										ルーム新規作成
@@ -55,22 +64,35 @@ block content
 									.room-box
 										.room-logo
 											img(src='/img/rooms/'+room.key+'.gif')
-										.room-info
+										.room-header
 											.room-name
-												a(href='/rooms/' + room.key, class="#{roomClass}", title="#{room.name}")
+												a(href='/rooms/' + room.key, class="#{roomClass}", title="#{room.name}", target='_blank')
 													| #{room.name.substr(0,20)}
 											.room-admin
-												オーナー：#{room.admin}
-											.room-detail
-												#{room.detail}
-											.room-online
-												span.users-online
-													| オンライン #{room.online} 人
+												| オーナー：
+												img(src='#{room.admin.image_url}')
+												b #{room.admin.nickname}
+										.room-detail
+											| #{room.detail}
+										.room-info
 											.room-total-visits
-												これまでの訪問者数：#{room.total_visits} 人
+													| 総入場者数：
+													b #{room.total_visits} 
+													| 人
+											.room-time
+													| このルームは 
+													b #{room.time} 
+													| に作られました。
+										.room-online
+											.users-online-number
+												| オンライン：
+												b #{room.online} 
+												| 人
+											each user, index in room.users
+												img(src='#{user.image_url}')
 					.inactive
-						input(type='checkbox', id="hide-inactive", checked) 
-						label(for="hide-inactive") Hide inactive
+						//input(type='checkbox', id="hide-inactive", checked) 
+						//label(for="hide-inactive") Hide inactive
 				else
 					#thread-list
 						.caption
@@ -89,13 +111,15 @@ block content
 
 					.line-thread
 					.line-thread.second
+				// << room
 
 			//
 			// right column
 			//
 			#right-column
 				.caption
-					.caption-title ロビーチャット
+					.caption-title
+						| #{room.name}チャット
 				.chat
 					.history
 						// historical submits
@@ -121,7 +145,7 @@ block content
 
 			#online-user-list
 				.caption
-					.caption-title 閲覧中のみんな
+					.caption-title オンラインのユーザ一覧
 					.caption-title.span.online-num
 				include online_user_list
 			// #online-user-list

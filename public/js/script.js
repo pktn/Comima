@@ -61,6 +61,10 @@ $(function() {
 		}
 	});
 
+	$(".room-box").hover(function(){
+		console.log('sa');
+	});
+
   //Socket.io
   var socket = io.connect();
 

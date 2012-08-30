@@ -79,7 +79,6 @@ exports.timeParser = function(date) {
   for (var i in ints) {
     if (gap > ints[i]) { measure = i; }
   }
- 
   amount = gap / ints[measure];
   amount = gap > ints.day ? (Math.round(amount * 100) / 100) : Math.round(amount);
   amount += jpints[measure] + '前';
@@ -101,11 +100,11 @@ exports.getLogFilePath = function () {
 	return path;
 }
 
-exports.getTimestamp = function () {
-	var now = new Date();
-	var timestamp = now.getFullYear().toString()
-		+ (now.getMonth() + 1)
-		+ now.getDate();
+exports.getTimestamp = function (date) {
+	var d = date || new Date();
+	var timestamp = d.getFullYear().toString()
+		+ (d.getMonth() + 1)
+		+ d.getDate();
 	return timestamp;
 }
 

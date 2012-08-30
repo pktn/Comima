@@ -15,24 +15,21 @@ app.get('/', action.restrict, function(req, res) {
 	req.params.id = 'lobby';
 	action.getCominyUserInfo(req, res, function() {
 		action.getUserInfo(req, res, client, function() {
-			action.getRoomInfo(req, res, client, function(room) {
-				action.getUsersInRoom(req, res, client, room, function(users) {
-					action.getPublicRoomsInfo(client, function(rooms) {
-						action.enterRoom(req, res, client, room, users, rooms);
-					});
+			action.getRoomsInfo(client, function(rooms) {
+				action.getRoomsUserInfo(client, rooms, function(rooms) {
+					action.enterRoom(req, res, client, rooms);
 				});
 			});
 		});
 	});
 });
 
-
 /*
  * Rooms list
  */
 
 app.get('/rooms/list', action.restrict, function(req, res) {
-  action.getPublicRoomsInfo(client, function(rooms) {
+  action.getRoomsInfo(client, function(rooms) {
     res.render('room_list', { rooms: rooms });
   });
 });
@@ -56,11 +53,9 @@ app.post('/create', action.restrict, function(req, res) {
 app.get('/rooms/:id', action.restrict, function(req, res) {
 	action.getCominyUserInfo(req, res, function() {
 		action.getUserInfo(req, res, client, function() {
-			action.getRoomInfo(req, res, client, function(room) {
-				action.getUsersInRoom(req, res, client, room, function(users) {
-					action.getPublicRoomsInfo(client, function(rooms) {
-						action.enterRoom(req, res, client, room, users, rooms);
-					});
+			action.getRoomsInfo(client, function(rooms) {
+				action.getRoomsUserInfo(client, rooms, function(rooms) {
+					action.enterRoom(req, res, client, rooms);
 				});
 			});
 		});
