@@ -10,6 +10,7 @@ var express				= require('express')
   , sessionStore	= exports.sessionStore = new RedisStore(config.redis.session)
 	, utils					= exports.utils = require('./utils')
   , winston				= require('winston')
+	, stylus 				= require('stylus')
   , init					= require('./init');
 
 /*
@@ -49,9 +50,17 @@ app.configure(function() {
   app.set('port', config.app.port || 6789);
   app.set('view engine', 'jade'); 
   app.set('views', __dirname + '/views/themes/' + config.theme.name);
+	app.use(stylus.middleware({
+		src: __dirname + '/public',
+		dest: __dirname + '/public',
+		compile: function compile(str, path) {
+		  return stylus(str)
+  	  	.set('filename', path)
+	  	  .set('compress', false) // TODO
+		}
+	}));
   app.use(express.static(__dirname + '/public'));
 
-  // session
   app.use(express.bodyParser());
   app.use(express.cookieParser(config.session.secret));
   app.use(express.session({
@@ -62,6 +71,7 @@ app.configure(function() {
 
   app.use(app.router);
 });
+
 
 
 // development

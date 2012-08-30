@@ -13,7 +13,7 @@ block content
 						img(src='/img/rooms/#{room.key}.gif')
 					b #{room.name}
 			.room-detail
-				| #{room.detail}
+				| #{room.detail.substring(0,110)}
 			//include rooms_dropdown
 			include user_box
 
