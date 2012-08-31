@@ -66,10 +66,26 @@ io.sockets.on('connection', function (socket) {
     , nickname = hs.comima.user.nickname
     , user_id = hs.comima.user.user_id
     , room_id = hs.comima.room
-    , chatlogFileName = './chats/' + room_id + '_' + utils.getLogFilePath()
-    , chatlogWriteStream = fs.createWriteStream(chatlogFileName, {'flags': 'a'})
-    , threadlogFileName = './threads/' + room_id + '_' + utils.getLogFilePath()
-    , threadlogWriteStream = fs.createWriteStream(threadlogFileName, {'flags': 'a'});
+    , chatlogFile = './chats/' + room_id + '_' + utils.getLogFilePath().pop()
+    , chatlogFiles = []
+    , chatlogWriteStream = fs.createWriteStream(chatlogFile, {'flags': 'a'} )
+    , threadlogFile = './threads/' + room_id + '_' + utils.getLogFilePath().pop()
+    , threadlogFiles = []
+    , threadlogWriteStream = fs.createWriteStream(threadlogFile, {'flags': 'a'});
+
+	// open chatlog file
+	var chat_paths = utils.getLogFilePath(config.chat.daysgethistory);
+	for(var i=0; i<chat_paths.length; i++) {
+		var chatlogFile = './chats/' + room_id + '_' + chat_paths[i];
+		chatlogFiles.push(chatlogFile);
+	}
+
+	// open threadlog file
+	var thread_paths = utils.getLogFilePath(config.thread.daysgethistory);
+	for(var i=0; i<thread_paths.length; i++) {
+		var threadlogFile = './threads/' + room_id + '_' + thread_paths[i];
+		threadlogFiles.push(threadlogFile);
+	}
 
 	log.debug(
 		'[socket.io] new connection from '
@@ -158,28 +174,38 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('chat history request', function() {
-    var tail = require('child_process').spawn(
-			'tail', ['-n', config.chat.maxhistoryline, chatlogFileName]
-		);
-    tail.stdout.on('data', function (data) {
-      var lines = data.toString('utf-8').split("\n");
-      lines.forEach(function(line, index) {
-        if(line.length) {
-          var historyLine = JSON.parse(line);
-					utils.getUserInfo(historyLine.fromUserId, function(user) {
-						historyLine.fromImageUrl = user.image_url;
-  	  			socket.emit('chat history response', {
-    	    		history: historyLine
+		var total_lines = 0;
+
+		for(var i in chatlogFiles) {
+			var tail_num = config.chat.maxhistoryline - total_lines;
+			if (tail_num > 0) {
+		    var tail = require('child_process').spawn(
+					'tail', ['-n', tail_num, chatlogFiles[i]]
+				);
+			}
+	    tail.stdout.on('data', function (data) {
+  	    var lines = data.toString('utf-8').split("\n");
+				lines = lines.reverse();
+				lines.forEach(function(line){
+					total_lines++;
+     	  	if(line) {
+						// response
+       	  	var historyLine = JSON.parse(line);
+						utils.getUserInfo(historyLine.fromUserId, function(user) {
+							historyLine.fromImageUrl = user.image_url;
+  						socket.emit('chat history response', {
+  	  					history: historyLine
+							});
 						});
-					});
-        }
-      });
-    });
+ 	      	}
+				});
+   	  });
+		}
   });
 
   socket.on('thread history request', function() {
     var tail = require('child_process').spawn(
-			'tail', ['-n', config.thread.maxhistoryline, threadlogFileName]
+			'tail', ['-n', config.thread.maxhistoryline, threadlogFile]
 		);
     tail.stdout.on('data', function (data) {
       var lines = data.toString('utf-8').split("\n");

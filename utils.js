@@ -95,9 +95,18 @@ exports.dumpObject = function (o) {
 	}
 };
 
-exports.getLogFilePath = function () {
-	var path = this.getTimestamp() + '.txt';
-	return path;
+exports.getLogFilePath = function (day) {
+	day = day || 1;
+
+	var paths = [];
+	var date = new Date();
+
+	for(var i=0; i<day; i++) {
+		var path = this.getTimestamp(date) + '.txt';
+		paths.push(path);
+		date.setDate(date.getDate() - 1);
+	}
+	return paths;
 }
 
 exports.getTimestamp = function (date) {

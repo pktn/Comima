@@ -91,9 +91,8 @@ $(function() {
 
     if(h) {
       var $lastInput
-        , lastInputUser;
-
-      var time = new Date(h.atTime)
+        , lastInputUser
+        , time = new Date(h.atTime)
         , chatBoxData = {
             nickname: h.from,
 			  		user_id: h.fromUserId,
@@ -108,14 +107,9 @@ $(function() {
       $lastInput = $('.chat .history').children().last();
       lastInputUser = $lastInput.data('user');
 
-      if($lastInput.hasClass('chat-box') && lastInputUser === chatBoxData.nickname) {
-        $lastInput.find('.text-box p').append('<br>' + textParser(h.withData));
-      } else {
-        $('.chat .history').append(parseBox(ich.chat_box(chatBoxData)));
-				// delay for stamp message
-				setTimeout(function(){$('.chat').scrollTop($('.chat').prop('scrollHeight'));}, 1000);
-      }
-    }
+      $('.chat .history').prepend(parseBox(ich.chat_box(chatBoxData)));
+			setTimeout(function(){$('.chat').scrollTop($('.chat').prop('scrollHeight'));}, 1000);
+  	}
   });
 
 	/*
@@ -243,8 +237,6 @@ $(function() {
     data.timestamp = +time;
     data.time = timeParser(time);
 
-   console.log($('.chat').prop('scrollHeight'));
-   console.log($('.chat .current .chat-box').height());
 		// append text to last block
     if( $lastInput.hasClass('chat-box') &&
 				lastInputUser === data.nickname &&
@@ -256,6 +248,14 @@ $(function() {
 			updatePost();
     }
 
+		// TODO
+		if (data.msg.match(/^http(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+)\.(?:jpg|gif|png)$/)) { 
+			$('.image-box').css('background-image', 'url(' + data.msg + ')');
+		}
+		/*else {
+			$('.video-box').append('<iframe width="560" height="315" src="http://www.youtube.com/embed/' + yid + '?autoplay=1" frameborder="0"></iframe>');
+		}
+*/
 		// delay for stamp message
 		setTimeout(function(){$('.chat').scrollTop($('.chat').prop('scrollHeight'));}, 10);
  
@@ -484,7 +484,7 @@ $(function() {
     wink: /;-\)|;\)/g,
     frown: /:-\(|:\(|=\(|=-\(/g,
     ambivalent: /:-\||:\|/g,
-    slant: /:-\/|:\/|:-\\|:\\|=-\/|=\/|=-\\|=\\/g,
+    slant: /:-\/|:-\\|:\\|=-\/|=\/|=-\\|=\\/g,
     gasp: /:-O|:O|:-o|:o|=-O|=O|=-o|=o/g,
     laugh: /:-D|:D|=-D|=D/g,
     kiss: /:-\*|:\*|=-\*|=\*/g,

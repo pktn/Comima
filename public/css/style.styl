@@ -1,423 +1,106 @@
-article, aside, details, figcaption, figure, footer, header, hgroup, nav, section
-  display: block
+// variables
+$lobby_theme_color = #078;
 
-audio, canvas, video
-  display: inline-block
-  *display: inline
-  *zoom: 1
+// my definition
 
-audio:not([controls])
-  display: none
-
-[hidden]
-  display: none
-
-html
-  font-size: 100%
-  -webkit-text-size-adjust: 100%
-  -ms-text-size-adjust: 100%
-
-html, button, input, select, textarea
-  font-family: "メイリオ","Meiryo",Sans-Serif
-  color: #222
-
-body
-  margin: 0
-  font-size: 1em
-  line-height: 1.4
-
-::-moz-selection
-  background: #f4e489
-  color: #333
-  text-shadow: none
-
-::selection
-  background: #f4e489
-  color: #333
-  text-shadow: none
-
-a
-  color: #00e
-
-a:hover
-  color: #06e
-
-a:focus
-  outline: thin dotted
-
-a:hover, a:active
-  outline: 0
-
-abbr[title]
-  border-bottom: 1px dotted
-
-b, strong
-  font-weight: bold
-
-blockquote
-  margin: 1em 40px
-
-dfn
-  font-style: italic
-
-hr
-  display: block
-  height: 1px
-  border: 0
-  border-top: 1px solid #ccc
-  margin: 1em 0
-  padding: 0
-
-ins
-  background: #ff9
-  color: #000
-  text-decoration: none
-
-mark
-  background: #ff0
-  color: #000
-  font-style: italic
-  font-weight: bold
-
-pre, code, kbd, samp
-  font-family: monospace, serif
-  _font-family: 'courier new', monospace
-  font-size: 1em
-
-pre
-  white-space: pre-wrap
-  word-wrap: break-word
-
-q
-  quotes: none
-
-q:before, q:after
-  content: none
-
-small
-  font-size: 85%
-
-sub, sup
-  font-size: 75%
-  line-height: 0
-  position: relative
-  vertical-align: baseline
-
-sup
-  top: -0.5em
-
-sub
-  bottom: -0.25em
-
-ul, ol
-  margin: 1em 0
-  padding: 0 0 0 40px
-
-dd
-  margin: 0 0 0 40px
-
-nav ul, nav ol
-  list-style: none
-  list-style-image: none
-  margin: 0
-  padding: 0
-
-img
-  border: 0
-  -ms-interpolation-mode: bicubic
-  vertical-align: middle
-
-svg:not(:root)
-  overflow: hidden
-
-figure
-  margin: 0
-
-form
-  margin: 0
-
-fieldset
-  border: 0
-  margin: 0
-  padding: 0
-
-label
-  cursor: pointer
-
-legend
-  border: 0
-  *margin-left: -7px
-  padding: 0
-  white-space: normal
-
-button, input, select, textarea
-  font-size: 100%
-  margin: 0
-  vertical-align: baseline
-  *vertical-align: middle
-
-button, input
-  line-height: normal
-
-button, input[type="button"], input[type="reset"], input[type="submit"]
-  cursor: pointer
-  -webkit-appearance: button
-  *overflow: visible
-
-button[disabled], input[disabled]
-  cursor: default
-
-input[type="checkbox"], input[type="radio"]
-  box-sizing: border-box
-  padding: 0
-  *width: 13px
-  *height: 13px
-
-input[type="search"]
-  -webkit-appearance: textfield
-  -moz-box-sizing: content-box
-  -webkit-box-sizing: content-box
-  box-sizing: content-box
-
-input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button
-  -webkit-appearance: none
-
-button::-moz-focus-inner, input::-moz-focus-inner
-  border: 0
-  padding: 0
-
-textarea
-  overflow: auto
-  vertical-align: top
-  resize: vertical
-
-input:valid, textarea:valid
-
-input:invalid, textarea:invalid
-  background-color: #f0dddd
-
-table
-  border-collapse: collapse
-  border-spacing: 0
-
-td
-  vertical-align: top
-
-.chromeframe
-  margin: 0.2em 0
-  background: #ccc
-  color: black
-  padding: 0.2em 0
-
-html, body
-  margin: 0
-  padding: 0
-  -webkit-font-smoothing: antialiased
-
-html, body
-  height: 100%
-
-body
-  position: relative
-  font-size: 78%
-
-a
-  text-decoration: none
-  font-weight: bold
-  color: #00E
-
-input.text
-  border: 1px solid #666
-  border-radius: 4px
-  padding: .6em
-  box-shadow: 0 1px 2px rgba(0,0,0,.6) inset
-  width: 200px
-
-input[type=text].text:focus,
-input[type=search].text:focus,
-input[type=password].text:focus, textarea:focus
-  border: 1px solid #488ef5
-  outline: none
-  -webkit-box-shadow: inset 0 1px 2px #ddd, 0px 0 5px #1a6dde
-  -moz-box-shadow: 0 0 5px #1a6dde
-  box-shadow: inset 0 1px 2px #ddd, 0px 0 5px #1a6dde
-
-.wrap
+#wrap
   height: 100%
   min-height: 100%
   overflow-y: scroll
   width: auto
   max-width: 100%
 
-a b
-  background: red
-  height: 8px
-  width: 8px
-  border: 1px solid rgba(0,0,0,.7)
-  margin-bottom: -1px
-  margin-right: 6px
-  border-radius: 100px
-  display: inline-block
-
-a.available b
-  background: -moz-radial-gradient(50% top, circle,  #B5D8A6, #58854B)
-
-a.busy b
-  background: -moz-radial-gradient(50% top, circle,  #DCCACC, #8C4F55)
-
-a.away b
-  background: -moz-radial-gradient(50% top, circle,  #DCDBCA, #908C51)
-
-.color-line
-  width: 100%
-  background: #f23c24
-  background-image: -o-linear-gradient(360deg, #4d6fbc, #4d6fbc 0.4%, #4f6ebc 0.4%, #4f6eba 1%, #516dba 1%, #536bb5 1.9%, #5769b4 2.8%, #576ab2 3%, #5c64ae 4.5%, #5f63ac 4.5%, #6261a7 5.6%, #6560a5 5.6%, #665ea4 6.3%, #685da2 6.3%, #695c9f 6.7%, #70599e 7.4%, #70589b 7.8%, #735696 8.5%, #765496 8.7%, #864888 11.1%, #8a4682 12%, #944079 13.3%, #964077 13.7%, #9d3a70 14.6%, #9e3a70 14.8%, #a63767 15.9%, #aa3565 16.5%, #ad3362 16.8%, #af3361 17.2%, #b62f59 18.3%, #b82d56 18.5%, #cb2843 21.8%, #db2536 24.6%, #f03026 40.6%, #f33824 46%, #f13924 46.2%, #f24124 51.5%, #f35322 60.4%, #f1541f 60.4%, #f25520 61.5%, #f2571e 61.5%, #f2571e 62.2%, #f1591f 62.2%, #f25b20 64.1%, #f15c1d 64.1%, #f35e1f 65.5%, #f15f1c 65.5%, #f36a18 70%, #f26c19 70.3%, #f27714 76.2%, #f27910 76.2%, #f37a12 77.2%, #f27b14 77.2%, #f27d10 79%, #f2800d 79%, #f3810f 80.3%, #f2830b 80.3%, #f3840d 81.4%, #f28506 81.4%, #f48b05 85.5%, #f28c04 85.5%, #f39200 88.8%, #f49700 91.4%, #f29800 91.4%, #f39900 93%, #f39b00 93%, #f39f00 95.1%, #f4a300 99.5%, #f2a400 99.5%, #f2a400)
-  height: 1px
-  border-top: 1px solid black
-  display: block
-  top: 0
-  z-index: 10000
-
-header
-  width: 940px
-  height: 60px
-  margin: 0 auto
-  padding: 10px
-  z-index: 1000
-  font-size: .9em
-
-header a:hover
-  color: #ccc
-
-.dropdown
-  position: relative
-
-.dropdown .selected
-  border: 1px solid #141617
-  padding: 6px 30px 6px 10px
-  display: block
-  text-transform: uppercase
-  box-shadow: 0 1px 0 rgba(255,255,255,.1) inset, 0 1px 0 rgba(255,255,255,.1)
+#left-column
+  width: 660px
+  float: left
+  border: solid 2px $lobby_theme_color
   border-radius: 4px
 
-.dropdown .selected:hover
-
-.dropdown .selected.active
-  border: 1px solid rgba(255,255,255,.6)
-  box-shadow: 0 0 4px rgba(255,255,255,.2)
-
-.dropdown .dropdown-options
-  background-image: -o-linear-gradient(#f9f9f9,  #f1f1f1)
+#right-column
+  width: 280px
+  float: right
+  border: solid 2px $lobby_theme_color
   border-radius: 4px
-  position: absolute
-  display: none
-  top: 36px
-  box-shadow: 0 0px 2px black
-  overflow: hidden
 
-.dropdown .dropdown-options .list
-  overflow-y: scroll
-  max-height: 300px
+#thread-list
+  height: 580px
 
-.dropdown .dropdown-options input
+#thread-list .post-thread
+  float: right
+  padding: 0 20px
+
+#online-user-list
+  border: solid 2px $lobby_theme_color
+  height: 160px
   border-radius: 4px
-  border: 1px solid #ccc
+
+#online-user-list a
+  color: #06e
+
+#online-user-list img
+  width: 48px
+  height: 48px
   margin: 4px
-  padding: 8px 8px
-  width: 154px
 
-.dropdown .dropdown-options a.current
-  background: url('../img/icon-selected.png') right center no-repeat
+#online-user-list .online
+  clear: both
+  padding: 15px
 
-.dropdown .dropdown-options a:hover
-  background-color: white
-
-.dropdown .dropdown-options .list a.option:first-child, .dropdown .dropdown-options a.option.create-room
-  -webkit-border-top-left-radius: 4px
-  -webkit-border-top-right-radius: 4px
-  -moz-border-radius-topleft: 4px
-  -moz-border-radius-topright: 4px
-  border-top-left-radius: 4px
-  border-top-right-radius: 4px
-
-.dropdown .dropdown-options a.option.logout
-  background-color: #eee
-
-.dropdown .dropdown-options a.option:last-child
-  -webkit-border-bottom-right-radius: 4px
-  -webkit-border-bottom-left-radius: 4px
-  -moz-border-radius-bottomright: 4px
-  -moz-border-radius-bottomleft: 4px
-  border-bottom-right-radius: 4px
-  border-bottom-left-radius: 4px
-
-.dropdown .dropdown-options a.option.create-room
-  background-image: -o-linear-gradient(#f1f1f1,  #ccc)
-
-.dropdown.dropdown-room
-  margin-left: 2.4em
-
-.dropdown.dropdown-room .dropdown-options
-  width: 180px
-
-.dropdown.dropdown-room .dropdown-options .list
-  width: 180px
-
-.dropdown.dropdown-room .dropdown-options a.current
-  background-position: 150px center
-
-.dropdown.dropdown-status .dropdown-options a.current
-  background-position: 96px center
-
-.dropdown.dropdown-status .dropdown-options
-  width: 125px
-  text-transform: capitalize
-
-.dropdown.dropdown-status .selected
-  width: 84px
-
-.dropdown .dropdown-options .triangle
-  position: absolute
-  top: -5px
-  left: 48%
-  display: block
-  width: 0
-  height: 0
-  border-left: 5px solid transparent
-  border-right: 5px solid transparent
-  border-bottom: 5px solid #f1f1f1
-
-.dropdown .dropdown-options a
-  display: block
-  color: #333
-  padding: 1em 1em
-  border-bottom: 1px solid #ccc
-  box-shadow: 0 1px 0 rgba(255,255,255,.4)
-
-.dropdown .dropdown-options a:last-child
-  border-bottom: 0
-  box-shadow: none
-
-.dropdown
-  position: relative
-
-.dropdown i
-  position: absolute
-  top: 8px
-  right: 10px
-  width: 12px
-  height: 12px
-  background: url('../img/icon-dropdown.png') right center no-repeat
-  display: block
-  z-index: 1000
-
-.dropdown.dropdown-status
+#user-box
+  font-size: 1em
+  width: 200px
   float: right
 
-.dropdown.dropdown-room
-  background-image: -o-linear-gradient(#555 5.8%, #242424)
+.caption
+  height: 20px
+  padding: 10px
+  background-color: $lobby_theme_color
+  color: #FFF
+
+.caption a
+  color: #FF0
+
+.caption .caption-title
   float: left
-  width: 180px
+  font-weight: bolder
+  font-color: #FFF
+  font-size: 1.2em
+
+.user-img img
+  float: left
+  width: 48px
+  height: 48px
+  margin: 4px
+
+.user-nickname
+  font-size: 1.1em
+  padding: 4px
+  display: block
+
+.nickname
+  padding: 4px
+
+.logout
+  padding: 4px
+
+.spacing
+  clear: both
+  height: 10px
+
+.post-room
+  float: right
+  padding: 0 20px
+
+.rectangle
+  position: absolute
+  left: 5.6em
+  top: 3.6em
+  border-left: 0
+  border-right: solid 20px white
+  border-top: solid 10px transparent
+  border-bottom: solid 5px transparent
+  width: 0
+  height: 0
 
 .content
   width: 960px
@@ -477,6 +160,9 @@ header a:hover
   color: rgba(0,0,0,.6)
   font-weight: normal
 
+.content .chat .chat-box .text-box
+  word-break: break-all
+
 .content .chat .chat-box p
   clear: both
   width: 150px
@@ -492,7 +178,6 @@ header a:hover
   margin-bottom: 0
 
 .content .chat .chat-box p a
-  color: #333
   border-bottom: 1px solid #ccc
   padding-bottom: 1px
 
@@ -662,12 +347,6 @@ header a:hover
 .content .room .room-box .room-info
   float: right
   width: 120px
-
-.content .room .room-box .room-info .room-total-visits
-  font-size: 0.8em
-  opacity: .6
-
-.content .room .room-box .room-info .room-time
   font-size: 0.8em
   opacity: .6
 
@@ -679,6 +358,20 @@ header a:hover
   width: 20px
   height: 20px
   margin: 0 5px
+
+.content .image-box
+  height: 100%
+  width: 100%
+  background: no-repeat transparent center center
+  background-size: contain;
+
+.content .video-box iframe
+	height: 315px
+	width: 420px
+
+.content .video-box
+	height: 100%
+	width: 100%
 
 .content .thread
   float: left
@@ -786,6 +479,377 @@ header a:hover
   display: block
   margin: 1% 1.5%
 
+.posting-thread
+  background: url('../img/loading.gif') center left no-repeat
+  margin: auto
+  width: 200px
+  font-style: italic
+
+.button
+  border: 1px solid #999
+  color: #333
+  display: inline-block
+  box-shadow: 0 1px 2px rgba(0,0,0,.3)
+  background-image: -o-linear-gradient(#f7f7f7 7.6%, #d5d5d5)
+  font-weight: bold
+  border-radius: 5px
+  padding: 10px 20px
+
+.button:hover
+  color: #000
+  background-image: -o-linear-gradient(#f7f7f7 7.6%, #ccc)
+
+.button:active
+  color: #000
+  background-image: -o-linear-gradient(#ccc 7.6%, #f7f7f7)
+
+// tag
+
+article, aside, details, figcaption, figure, footer, header, hgroup, nav, section
+  display: block
+
+audio, canvas, video
+  display: inline-block
+  *display: inline
+  *zoom: 1
+
+audio:not([controls])
+  display: none
+
+[hidden]
+  display: none
+
+html
+  font-size: 100%
+  -webkit-text-size-adjust: 100%
+  -ms-text-size-adjust: 100%
+
+html, button, input, select, textarea
+  font-family: "メイリオ","Meiryo",Sans-Serif
+  color: #222
+
+body
+  margin: 0
+  font-size: 1em
+  line-height: 1.4
+
+::selection
+  background: #f4e489
+  color: #333
+  text-shadow: none
+
+a
+  color: #00e
+
+a:hover
+  color: #06e
+
+a:focus
+  outline: thin dotted
+
+a:hover, a:active
+  outline: 0
+
+abbr[title]
+  border-bottom: 1px dotted
+
+b, strong
+  font-weight: bold
+
+blockquote
+  margin: 1em 40px
+
+dfn
+  font-style: italic
+
+hr
+  display: block
+  height: 1px
+  border: 0
+  border-top: 1px solid #ccc
+  margin: 1em 0
+  padding: 0
+
+ins
+  background: #ff9
+  color: #000
+  text-decoration: none
+
+mark
+  background: #ff0
+  color: #000
+  font-style: italic
+  font-weight: bold
+
+pre, code, kbd, samp
+  font-family: monospace, serif
+  _font-family: 'courier new', monospace
+  font-size: 1em
+
+pre
+  white-space: pre-wrap
+  word-wrap: break-word
+
+q
+  quotes: none
+
+q:before, q:after
+  content: none
+
+small
+  font-size: 85%
+
+sub, sup
+  font-size: 75%
+  line-height: 0
+  position: relative
+  vertical-align: baseline
+
+sup
+  top: -0.5em
+
+sub
+  bottom: -0.25em
+
+ul, ol
+  margin: 1em 0
+  padding: 0 0 0 40px
+
+dd
+  margin: 0 0 0 40px
+
+nav ul, nav ol
+  list-style: none
+  list-style-image: none
+  margin: 0
+  padding: 0
+
+img
+  border: 0
+  -ms-interpolation-mode: bicubic
+  vertical-align: middle
+
+svg:not(:root)
+  overflow: hidden
+
+figure
+  margin: 0
+
+form
+  margin: 0
+
+fieldset
+  border: 0
+  margin: 0
+  padding: 0
+
+label
+  cursor: pointer
+
+legend
+  border: 0
+  *margin-left: -7px
+  padding: 0
+  white-space: normal
+
+button, input, select, textarea
+  font-size: 100%
+  margin: 0
+  vertical-align: baseline
+  *vertical-align: middle
+
+button, input
+  line-height: normal
+
+button, input[type="button"], input[type="reset"], input[type="submit"]
+  cursor: pointer
+  -webkit-appearance: button
+  *overflow: visible
+
+button[disabled], input[disabled]
+  cursor: default
+
+input[type="checkbox"], input[type="radio"]
+  box-sizing: border-box
+  padding: 0
+  *width: 13px
+  *height: 13px
+
+input[type="search"]
+  -webkit-appearance: textfield
+  -moz-box-sizing: content-box
+  -webkit-box-sizing: content-box
+  box-sizing: content-box
+
+input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button
+  -webkit-appearance: none
+
+textarea
+  overflow: auto
+  vertical-align: top
+  resize: vertical
+
+table
+  border-collapse: collapse
+  border-spacing: 0
+
+td
+  vertical-align: top
+
+.chromeframe
+  margin: 0.2em 0
+  background: #ccc
+  color: black
+  padding: 0.2em 0
+
+html, body
+  margin: 0
+  padding: 0
+  -webkit-font-smoothing: antialiased
+
+html, body
+  height: 100%
+
+body
+  position: relative
+  font-size: 78%
+
+a
+  text-decoration: none
+  font-weight: bold
+  color: #00E
+
+input.text
+  border: 1px solid #666
+  border-radius: 4px
+  padding: .6em
+  width: 200px
+
+a b
+  background: red
+  height: 8px
+  width: 8px
+  border: 1px solid rgba(0,0,0,.7)
+  margin-bottom: -1px
+  margin-right: 6px
+  border-radius: 100px
+  display: inline-block
+
+header
+  width: 940px
+  height: 60px
+  margin: 0 auto
+  padding: 10px
+  z-index: 1000
+  font-size: .9em
+
+header .room-title
+  float: left
+  font-size: 2em
+  width: 320px
+
+header .room-title img
+  width: 100px
+  margin-right: 20px
+
+header .room-detail
+  float: left
+  width: 300px
+  height: 70px
+  margin-top: 5px
+
+header a:hover
+  color: #ccc
+
+img
+  height: auto
+  width: auto
+
+.rooms-block, .create-room-block
+  float: left
+  width: 260px
+
+.inactive
+  margin-top: 10px
+
+.inactive input
+  margin-right: 5px
+
+.inactive label
+  font-style: italic
+  color: #666
+
+span.dropdown-users-online
+  background: rgba(0,0,0,.2)
+  margin-top: -2px
+  float: right
+  border-radius: 100px
+  min-width: 10px
+  text-align: center
+  display: inline-block
+  padding: 2px 4px
+  margin-left: 10px
+
+.text-grey
+  border: 1px solid rgba(0,0,0,.3)
+  background: #f9f9f9
+  width: 200px
+  padding: 1em
+  color: #666
+  border-radius: 4px
+  box-shadow: 0 1px 3px rgba(0,0,0,.4) inset
+
+.ir
+  display: block
+  border: 0
+  text-indent: -999em
+  overflow: hidden
+  background-color: transparent
+  background-repeat: no-repeat
+  text-align: left
+  direction: ltr
+  *line-height: 0
+
+.ir br
+  display: none
+
+.hidden
+  display: none !important
+  visibility: hidden
+
+.visuallyhidden
+  border: 0
+  clip: rect(0 0 0 0)
+  height: 1px
+  margin: -1px
+  overflow: hidden
+  padding: 0
+  position: absolute
+  width: 1px
+
+.visuallyhidden.focusable:active, .visuallyhidden.focusable:focus
+  clip: auto
+  height: auto
+  margin: 0
+  overflow: visible
+  position: static
+  width: auto
+
+.invisible
+  visibility: hidden
+
+.clearfix:before, .clearfix:after
+  content: ""
+  display: table
+
+.clearfix:after
+  clear: both
+
+.clearfix
+  *zoom: 1
+
+// modal
+
 .modal-thread
   width: 500px
 
@@ -800,32 +864,6 @@ header a:hover
 
 .modal-content p
   line-height: 2em
-
-.thread-detail
-
-.tweet-user
-  float: left
-  margin-bottom: 1em
-
-.tweet-user input
-  border: none
-  border-bottom: 1px dashed #333
-  opacity: .5
-  width: 189px
-  padding: 1em 0 1em 20px
-  margin-right: 50px
-  background: url('../img/icon-twitter.png') left center no-repeat
-
-.tweet-user input.error
-  border-bottom: 1px solid red
-  color: red
-
-.tweet-user:nth-child(2n+1) input
-  margin-right: 0
-
-.tweet-user input:focus
-  opacity: 1
-  outline: none
 
 .modal h2
   border-radius: 0
@@ -860,183 +898,7 @@ header a:hover
   border-bottom-right-radius: 4px
   border-bottom-left-radius: 4px
 
-.fancybox-close
-  top: 16px
-  right: 16px
-  border: 1px solid #333
-  opacity: .3
-  background: url('../img/icon-close.png') center no-repeat
-  width: 20px
-  height: 20px
-  border-radius: 4px
-
-.fancybox-close:hover
-  opacity: .5
-
-.posting-thread
-  background: url('../img/loading.gif') center left no-repeat
-  margin: auto
-  width: 200px
-  font-style: italic
-
-.button
-  border: 1px solid #999
-  color: #333
-  display: inline-block
-  box-shadow: 0 1px 2px rgba(0,0,0,.3)
-  background-image: -o-linear-gradient(#f7f7f7 7.6%, #d5d5d5)
-  font-weight: bold
-  border-radius: 5px
-  padding: 10px 20px
-
-.button:hover
-  color: #000
-  background-image: -o-linear-gradient(#f7f7f7 7.6%, #ccc)
-
-.button:active
-  color: #000
-  background-image: -o-linear-gradient(#ccc 7.6%, #f7f7f7)
-
-.fancy-theme .wrap
-  background: url('../img/wood.jpg')
-
-.fancy-theme .chat-box
-  background-color: #e4eaec
-  text-shadow: 0 1px 0 white
-  position: relative
-  margin: 1.4em
-  border-radius: 4px
-  padding: 1em
-  padding-left: 6em
-
-.fancy-theme .chat
-  background: url('../img/bg-double-line.png') center
-  left: 1em
-  bottom: 5em
-  right: 1em
-
-.fancy-theme .chat, .fancy-theme .line-chat
-  box-shadow: 0 1px 1px rgba(0,0,0,.5)
-
-.fancy-theme .line-chat
-  bottom: 4.8em
-  left: 1.2em
-  z-index: 50
-  right: 1.2em
-  background: white
-  position: absolute
-  height: 40px
-
-.fancy-theme .line-chat.second
-  bottom: 4.5em
-  z-index: 40
-  left: 1.4em
-  right: 1.4em
-
-.fancy-theme .chat-input
-  background: url('../img/bg-purple.png')
-  border: 1px solid #000
-  box-shadow: 0 0 0 1px rgba(255,255,255,.1) inset,  0 0 10px 2px rgba(0,0,0,.65) inset
-
-img
-  height: auto
-  width: auto
-
-.rooms-block, .create-room-block
-  float: left
-  width: 260px
-
-.inactive
-  margin-top: 10px
-
-.inactive input
-  margin-right: 5px
-
-.inactive label
-  font-style: italic
-  color: #666
-
-span.dropdown-users-online
-  background: rgba(0,0,0,.2)
-  margin-top: -2px
-  float: right
-  border-radius: 100px
-  min-width: 10px
-  text-align: center
-  display: inline-block
-  padding: 2px 4px
-  margin-left: 10px
-
-.select-room-container .rooms-block
-  margin-right: 30px
-
-.select-room-container .room-list
-  box-shadow: 0 0 0 1px #ccc inset
-  max-height: 200px
-  overflow-y: auto
-  border-radius: 4px
-
-.select-room-container .room-list a
-  display: block
-  color: #333
-  text-align: left
-  padding: 10px 14px
-  font-size: 12px
-  border-bottom: 1px solid #ccc
-
-.select-room-container .room-list a:hover
-  color: #fff
-  background: url('../img/icon-select-room.png') 230px center no-repeat, -o-linear-gradient(#7F95F8 , #4554F3)
-  border-color: #4554F3
-  box-shadow: 0 0 0 1px #4554F3 inset
-  text-shadow: 0 -1px 1px black
-
-.select-room-container .room-list a:first-child
-  -webkit-border-top-left-radius: 4px
-  -webkit-border-top-right-radius: 3px
-  -moz-border-radius-topleft: 3px
-  -moz-border-radius-topright: 3px
-  border-top-left-radius: 3px
-  border-top-right-radius: 3px
-
-.select-room-container .room-list a:last-child
-  -webkit-border-bottom-right-radius: 3px
-  -webkit-border-bottom-left-radius: 3px
-  -moz-border-radius-bottomright: 3px
-  -moz-border-radius-bottomleft: 3px
-  border-bottom-right-radius: 3px
-  border-bottom-left-radius: 3px
-
-.select-room-container .room-list a:first-child
-  box-shadow: none
-
-.select-room-container .room-list a:last-child
-  border-bottom: 0
-
-.select-room-container .room-list.hide-inactive > a.room-inactive
-  display: none
-
-.select-room-container em
-  color: #666
-  font-weight: normal
-  margin-right: 6px
-
-.text-grey
-  border: 1px solid rgba(0,0,0,.3)
-  background: #f9f9f9
-  width: 200px
-  padding: 1em
-  color: #666
-  border-radius: 4px
-  box-shadow: 0 1px 3px rgba(0,0,0,.4) inset
-
-.text-grey:focus
-  outline: none
-  border-color: #999
-
-input::-webkit-input-placeholder, input::-moz-input-placeholder
-  color: #999
-  font-style: italic
+// emoticon
 
 .emoticon-angry
   background-image: url('../img/emoticons/angry.png')
@@ -1137,57 +999,198 @@ input::-webkit-input-placeholder, input::-moz-input-placeholder
 .emoticon-hearteyes
   background-image: url('../img/emoticons/hearteyes.png')
 
-.ir
-  display: block
-  border: 0
-  text-indent: -999em
-  overflow: hidden
-  background-color: transparent
-  background-repeat: no-repeat
-  text-align: left
-  direction: ltr
-  *line-height: 0
+// fancy
 
-.ir br
-  display: none
+.fancy-theme .wrap
+  background: url('../img/wood.jpg')
 
-.hidden
-  display: none !important
-  visibility: hidden
+.fancy-theme .chat-box
+  background-color: #e4eaec
+  text-shadow: 0 1px 0 white
+  position: relative
+  margin: 1.4em
+  border-radius: 4px
+  padding: 1em
+  padding-left: 6em
 
-.visuallyhidden
-  border: 0
-  clip: rect(0 0 0 0)
-  height: 1px
-  margin: -1px
-  overflow: hidden
-  padding: 0
+.fancy-theme .chat
+  background: url('../img/bg-double-line.png') center
+  left: 1em
+  bottom: 5em
+  right: 1em
+
+.fancy-theme .chat, .fancy-theme .line-chat
+  box-shadow: 0 1px 1px rgba(0,0,0,.5)
+
+.fancy-theme .line-chat
+  bottom: 4.8em
+  left: 1.2em
+  z-index: 50
+  right: 1.2em
+  background: white
   position: absolute
-  width: 1px
+  height: 40px
 
-.visuallyhidden.focusable:active, .visuallyhidden.focusable:focus
-  clip: auto
-  height: auto
-  margin: 0
-  overflow: visible
-  position: static
-  width: auto
+.fancy-theme .line-chat.second
+  bottom: 4.5em
+  z-index: 40
+  left: 1.4em
+  right: 1.4em
 
-.invisible
-  visibility: hidden
+.fancy-theme .chat-input
+  background: url('../img/bg-purple.png')
+  border: 1px solid #000
+  box-shadow: 0 0 0 1px rgba(255,255,255,.1) inset,  0 0 10px 2px rgba(0,0,0,.65) inset
 
-.clearfix:before, .clearfix:after
-  content: ""
-  display: table
+.fancybox-close
+  top: 16px
+  right: 16px
+  border: 1px solid #333
+  opacity: .3
+  background: url('../img/icon-close.png') center no-repeat
+  width: 20px
+  height: 20px
+  border-radius: 4px
 
-.clearfix:after
-  clear: both
+.fancybox-close:hover
+  opacity: .5
 
-.clearfix
-  *zoom: 1
+// dropdown
 
-viewports=s("only screen and (min-width: 35em)");
-@media viewports {
+.dropdown
+  position: relative
+
+.dropdown .selected
+  border: 1px solid #141617
+  padding: 6px 30px 6px 10px
+  display: block
+  text-transform: uppercase
+  box-shadow: 0 1px 0 rgba(255,255,255,.1) inset, 0 1px 0 rgba(255,255,255,.1)
+  border-radius: 4px
+
+.dropdown .selected:hover
+
+.dropdown .selected.active
+  border: 1px solid rgba(255,255,255,.6)
+  box-shadow: 0 0 4px rgba(255,255,255,.2)
+
+.dropdown .dropdown-options
+  background-image: -o-linear-gradient(#f9f9f9,  #f1f1f1)
+  border-radius: 4px
+  position: absolute
+  display: none
+  top: 36px
+  box-shadow: 0 0px 2px black
+  overflow: hidden
+
+.dropdown .dropdown-options .list
+  overflow-y: scroll
+  max-height: 300px
+
+.dropdown .dropdown-options input
+  border-radius: 4px
+  border: 1px solid #ccc
+  margin: 4px
+  padding: 8px 8px
+  width: 154px
+
+.dropdown .dropdown-options a.current
+  background: url('../img/icon-selected.png') right center no-repeat
+
+.dropdown .dropdown-options a:hover
+  background-color: white
+
+.dropdown .dropdown-options .list a.option:first-child, .dropdown .dropdown-options a.option.create-room
+  -webkit-border-top-left-radius: 4px
+  -webkit-border-top-right-radius: 4px
+  -moz-border-radius-topleft: 4px
+  -moz-border-radius-topright: 4px
+  border-top-left-radius: 4px
+  border-top-right-radius: 4px
+
+.dropdown .dropdown-options a.option.logout
+  background-color: #eee
+
+.dropdown .dropdown-options a.option:last-child
+  -webkit-border-bottom-right-radius: 4px
+  -webkit-border-bottom-left-radius: 4px
+  -moz-border-radius-bottomright: 4px
+  -moz-border-radius-bottomleft: 4px
+  border-bottom-right-radius: 4px
+  border-bottom-left-radius: 4px
+
+.dropdown .dropdown-options a.option.create-room
+  background-image: -o-linear-gradient(#f1f1f1,  #ccc)
+
+.dropdown.dropdown-room
+  margin-left: 2.4em
+
+.dropdown.dropdown-room .dropdown-options
+  width: 180px
+
+.dropdown.dropdown-room .dropdown-options .list
+  width: 180px
+
+.dropdown.dropdown-room .dropdown-options a.current
+  background-position: 150px center
+
+.dropdown.dropdown-status .dropdown-options a.current
+  background-position: 96px center
+
+.dropdown.dropdown-status .dropdown-options
+  width: 125px
+  text-transform: capitalize
+
+.dropdown.dropdown-status .selected
+  width: 84px
+
+.dropdown .dropdown-options .triangle
+  position: absolute
+  top: -5px
+  left: 48%
+  display: block
+  width: 0
+  height: 0
+  border-left: 5px solid transparent
+  border-right: 5px solid transparent
+  border-bottom: 5px solid #f1f1f1
+
+.dropdown .dropdown-options a
+  display: block
+  color: #333
+  padding: 1em 1em
+  border-bottom: 1px solid #ccc
+  box-shadow: 0 1px 0 rgba(255,255,255,.4)
+
+.dropdown .dropdown-options a:last-child
+  border-bottom: 0
+  box-shadow: none
+
+.dropdown
+  position: relative
+
+.dropdown i
+  position: absolute
+  top: 8px
+  right: 10px
+  width: 12px
+  height: 12px
+  background: url('../img/icon-dropdown.png') right center no-repeat
+  display: block
+  z-index: 1000
+
+.dropdown.dropdown-status
+  float: right
+
+.dropdown.dropdown-room
+  background-image: -o-linear-gradient(#555 5.8%, #242424)
+  float: left
+  width: 180px
+
+// @media
+
+$viewports=s("only screen and (min-width: 35em)");
+@media $viewports {
 }
 
 @media print
@@ -1234,147 +1237,4 @@ viewports=s("only screen and (min-width: 35em)");
   h2, h3
     page-break-after: avoid
 
-header .room-title
-  float: left
-  font-size: 2em
-  width: 320px
-
-header .room-title img
-  width: 100px
-  margin-right: 20px
-
-header .room-detail
-  float: left
-  width: 300px
-  height: 70px
-  margin-top: 5px
-
-#left-column
-  width: 660px
-  float: left
-  border: solid 2px #00586F
-  border-radius: 4px
-
-#right-column
-  width: 280px
-  float: right
-  border: solid 2px #00586F
-  border-radius: 4px
-
-#thread-list
-  height: 580px
-
-#online-user-list
-  border: solid 2px #00586F
-  height: 160px
-  border-radius: 4px
-
-#online-user-list a
-  color: #06e
-
-#online-user-list img
-  width: 48px
-  height: 48px
-  margin: 4px
-
-#online-user-list .online
-  clear: both
-  padding: 15px
-
-#user-box
-  font-size: 1em
-  width: 200px
-  float: right
-
-.caption
-  height: 20px
-  padding: 10px
-  background-color: #0B5A80
-  color: #FFF
-
-.caption a
-  color: #FF0
-
-.caption .caption-title
-  float: left
-  font-weight: bolder
-  font-color: #FFF
-  font-size: 1.2em
-
-.user-img img
-  float: left
-  width: 48px
-  height: 48px
-  margin: 4px
-
-.user-nickname
-  font-size: 1.1em
-  padding: 4px
-  display: block
-
-.user-logout
-
-.nickname
-  padding: 4px
-
-.logout
-  padding: 4px
-
-.spacing
-  clear: both
-  height: 10px
-
-.post-room
-  float: right
-  padding: 0 20px
-
-#thread-list .post-thread
-  float: right
-  padding: 0 20px
-
-#thread-list .button-circle
-  background: rgba(0,0,0,.2)
-  box-shadow: 0 1px 0 rgba(255,255,255,.1)
-  float: left
-  padding: 4px
-  border-radius: 100px
-  width: 22px
-  height: 22px
-  margin-right: .8em
-  overflow: visible
-
-#thread-list .button-circle span, .button-circle.lock span
-  height: 22px
-  display: block
-  border-radius: 100px
-  background-image: -o-linear-gradient(#f1f1f1,  #ccc)
-  box-shadow: 0 1px 1px rgba(0,0,0,.8)
-
-#thread-list .button-circle span i
-  background: url('../img/icon-post-thread.png') center no-repeat
-  width: 16px
-  margin: 2px 3px
-  float: left
-  height: 16px
-  display: block
-
-#thread-list .button-circle.lock.active span
-  background-image: -o-linear-gradient(#f1f1f1,  #ccc)
-
-#thread-list .button-circle.lock span i
-  background: url('../img/icon-unlocked.png') center no-repeat
-
-#thread-list .button-circle.lock.active span i
-  background: url('../img/icon-locked.png') center no-repeat
-
-.rectangle
-  position: absolute
-  left: 5.6em
-  top: 3.6em
-  border-left: 0
-  border-right: solid 20px white
-  border-top: solid 10px transparent
-  border-bottom: solid 5px transparent
-  width: 0
-  height: 0
 

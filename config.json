@@ -38,9 +38,11 @@
 		"image_url" : "../img/icon-guest-user.png"
 	},
 	"chat": {
-		"maxhistoryline" : 20
+		"maxhistoryline" : 100,
+		"daysgethistory" : 3
 	},
 	"thread": {
-		"maxhistoryline" : 20
+		"maxhistoryline" : 100,
+		"daysgethistory" : 3
 	}
 }

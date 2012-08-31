@@ -1,7 +1,7 @@
 extends layout
 
 block content
-	.wrap
+	#wrap
 		header
 			.room-title
 				if (room.key === 'lobby')
@@ -102,6 +102,9 @@ block content
 										スレッド新規作成
 						// .caption
 						.thread
+							.video-box
+							.image-box
+
 							// thread-content
 						.history
 							//historical submits
