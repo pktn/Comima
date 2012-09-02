@@ -153,27 +153,6 @@ block content
 				include online_user_list
 			// #online-user-list
 
-			.spacing
-
-			.dropdown.dropdown-status
-				i
-				a.selected(class='#{user.status}', href='#')
-					b
-					| #{user.status}
-				br
-				.dropdown-options
-					.triangle
-					.list
-						- fullStatus.forEach(function(status) {
-							- if (status == user.status)
-								- current = 'current'
-							- else
-								- current = ''
-							a(class='option status #{status} #{current}', data-status='#{status}', href='#')
-								b
-								| #{status}
-						- })
-
 	// .wrap
 
 	span#room_name(style="display:none")= room.name

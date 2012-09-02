@@ -24,10 +24,13 @@ io.set('authorization', function (hsData, accept) {
     var cookies = parseCookies(cookie.parse(hsData.headers.cookie), config.session.secret)
       , sid = cookies['comima'];
     hsData.sid = sid;
+
     sessionStore.load(sid, function(err, session) {
       if(err || !session) {
         return accept('Error retrieving session!', false);
-      }
+      } else {
+				hsData.session = session;
+			}
 
 			var roomStr;
 
@@ -43,6 +46,7 @@ io.set('authorization', function (hsData, accept) {
 						user_id: session.user_id
 					, nickname: session.nickname
 					, image_url: session.image_url
+					, status: session.status
 				},
         room: /\/rooms\/(?:([^\/]+?))\/?$/g.exec(roomStr)[1]
       };
@@ -168,9 +172,12 @@ io.sockets.on('connection', function (socket) {
       io.sockets.emit('user-info update', {
 				user_id: user_id,
         nickname: nickname,
-        status: status
+				status: status,
+        full_status: utils.getFullStatus(status)
       });
     });
+		hs.session.status = status;
+		hs.session.save();
   });
 
   socket.on('chat history request', function() {

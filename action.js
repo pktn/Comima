@@ -145,7 +145,7 @@ exports.getCominyUserInfo = function(req, res, next){
 };
 
 /*
- * Set Image Url
+ * Get User Info
  */
 
 exports.getUserInfo = function(req, res, client, next) {
@@ -157,13 +157,13 @@ exports.getUserInfo = function(req, res, client, next) {
   	  req.session.user_id = req.session.nickname = 'guest-' + num;
 			req.session.image_url = config.guest.image_url;
 			req.session.status = 'available';
-			getUserInfo(req, res, client, next);
+			_getUserInfo(req, res, client, next);
 	  });
 	} else {
-		getUserInfo(req, res, client, next);
+		_getUserInfo(req, res, client, next);
 	}
 
-	function getUserInfo(req, res, client, next) {
+	function _getUserInfo(req, res, client, next) {
 		// status
 		req.session.status = req.session.status || 'available';
 
@@ -171,7 +171,8 @@ exports.getUserInfo = function(req, res, client, next) {
 		// first access OR when user info is changed
 			if (!user || 
 					user.image_url !== req.session.image_url ||
-					user.nickname  !== req.session.nickname) {
+					user.nickname  !== req.session.nickname ||
+					user.status !== req.session.status) {
 
 				// set user info
 				client.hmset(
@@ -300,6 +301,7 @@ exports.enterRoom = function(req, res, client, rooms){
 			current_room = room;
 		}
 	});
+
 	// local variables for html template
 	res.locals({
     room: current_room,

@@ -31,25 +31,51 @@ $lobby_theme_color = #078;
 
 #online-user-list
   border: solid 2px $lobby_theme_color
-  height: 160px
+  height: 120px
   border-radius: 4px
 
 #online-user-list a
   color: #06e
 
 #online-user-list img
-  width: 48px
-  height: 48px
+  width: 32px
+  height: 32px
   margin: 4px
 
 #online-user-list .online
   clear: both
   padding: 15px
 
+#online-user-list .available img
+  border: solid 1px green
+
+#online-user-list .away img
+  border: solid 1px red
+
+#online-user-list .busy img
+  border: solid 1px yellow
+
 #user-box
-  font-size: 1em
-  width: 200px
+  font-size: 1.1em
+  width: 280px
+  height: 80px
+  border: solid 2px $lobby_theme_color
+  border-radius: 4px
   float: right
+  background-color: $lobby_theme_color
+
+#user-box .nickname
+  color: white
+
+#user-box .user-img
+  margin: 10px
+
+#user-box .user-logout
+  text-align: right
+  margin: 5px
+
+#user-box .user-logout a
+  color: yellow
 
 .caption
   height: 20px
@@ -72,16 +98,11 @@ $lobby_theme_color = #078;
   height: 48px
   margin: 4px
 
-.user-nickname
-  font-size: 1.1em
-  padding: 4px
-  display: block
-
 .nickname
-  padding: 4px
+  font-size: 1.1em
 
 .logout
-  padding: 4px
+  padding: 10px
 
 .spacing
   clear: both
@@ -725,21 +746,11 @@ input.text
   padding: .6em
   width: 200px
 
-a b
-  background: red
-  height: 8px
-  width: 8px
-  border: 1px solid rgba(0,0,0,.7)
-  margin-bottom: -1px
-  margin-right: 6px
-  border-radius: 100px
-  display: inline-block
-
 header
-  width: 940px
-  height: 60px
+  width: 960px
+  height: 80px
   margin: 0 auto
-  padding: 10px
+  padding: 10px 0
   z-index: 1000
   font-size: .9em
 
@@ -1061,9 +1072,6 @@ span.dropdown-users-online
   position: relative
 
 .dropdown .selected
-  border: 1px solid #141617
-  padding: 6px 30px 6px 10px
-  display: block
   text-transform: uppercase
   box-shadow: 0 1px 0 rgba(255,255,255,.1) inset, 0 1px 0 rgba(255,255,255,.1)
   border-radius: 4px
@@ -1071,21 +1079,24 @@ span.dropdown-users-online
 .dropdown .selected:hover
 
 .dropdown .selected.active
-  border: 1px solid rgba(255,255,255,.6)
-  box-shadow: 0 0 4px rgba(255,255,255,.2)
 
 .dropdown .dropdown-options
-  background-image: -o-linear-gradient(#f9f9f9,  #f1f1f1)
   border-radius: 4px
   position: absolute
   display: none
-  top: 36px
+  left: 70px
+  top: 25px
   box-shadow: 0 0px 2px black
   overflow: hidden
 
 .dropdown .dropdown-options .list
   overflow-y: scroll
   max-height: 300px
+  font-size: 1em
+  width: 160px
+
+.dropdown .dropdown-options .list a
+  color: #000
 
 .dropdown .dropdown-options input
   border-radius: 4px
@@ -1138,11 +1149,29 @@ span.dropdown-users-online
   background-position: 96px center
 
 .dropdown.dropdown-status .dropdown-options
-  width: 125px
+  width: 130px
   text-transform: capitalize
+  z-index: 1000
+  background-color: white
 
 .dropdown.dropdown-status .selected
   width: 84px
+  margin: 0 8px
+
+.dropdown.dropdown-status .selected b
+	height: 12px
+	width: 12px
+	border-radius: 100px
+	display: inline-block
+
+.dropdown.dropdown-status .selected.available b
+	background: #5AFF7B
+
+.dropdown.dropdown-status .selected.away b
+	background: red
+
+.dropdown.dropdown-status .selected.busy b
+	background: yellow
 
 .dropdown .dropdown-options .triangle
   position: absolute
@@ -1165,22 +1194,6 @@ span.dropdown-users-online
 .dropdown .dropdown-options a:last-child
   border-bottom: 0
   box-shadow: none
-
-.dropdown
-  position: relative
-
-.dropdown i
-  position: absolute
-  top: 8px
-  right: 10px
-  width: 12px
-  height: 12px
-  background: url('../img/icon-dropdown.png') right center no-repeat
-  display: block
-  z-index: 1000
-
-.dropdown.dropdown-status
-  float: right
 
 .dropdown.dropdown-room
   background-image: -o-linear-gradient(#555 5.8%, #242424)

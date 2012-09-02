@@ -44,5 +44,10 @@
 	"thread": {
 		"maxhistoryline" : 100,
 		"daysgethistory" : 3
+	},
+	"status": {
+		"available" : "オンライン",
+		"busy" : "取り込み中",
+		"away" : "退席中"
 	}
 }

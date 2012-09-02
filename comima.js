@@ -26,7 +26,7 @@ client = exports.client  = redis.createClient();
 log = new (winston.Logger)({
 	transports: [
 		new (winston.transports.Console)({
-			colorize:true, level:'silly'
+			colorize:true, level:'silly', timestamp: utils.getDate
 		}),
 		new (winston.transports.File)({
 			timestamp: utils.getDate, filename:'logs/app.log' 

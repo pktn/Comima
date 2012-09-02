@@ -1,11 +1,27 @@
-- var fullStatus = ['available', 'away', 'busy']
+- var fullStatus = { available: 'オンライン', busy: '取り込み中', away: '退席中' };
 - var current;
 #user-box
 	.user-img
 		img(src='#{user.image_url}')
-	.user-nickname
-		a(class='nickname', href='#') #{user.nickname} さん
+	.dropdown.dropdown-status
+		a.selected(class='#{user.status}', href='#')
+			b
+		a(class='nickname', href='#') #{user.nickname}
+		br
+		.dropdown-options
+			.triangle
+			.list
+				- for (var status in fullStatus) {
+					- if (status === user.status)
+						- current = 'current'
+					- else
+						- current = ''
+					a(class='option status #{status} #{current}', data-status='#{status}', href='#')
+						b
+						| #{fullStatus[status]}
+				- }
 	br
 	.user-logout
+		a(class='') 設定
 		a(class='option logout', href='/rooms/list') ログアウト
 // #user-box		

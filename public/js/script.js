@@ -17,8 +17,7 @@ $(function() {
   //View handlers
   $(".dropdown a.selected").click(function() {
     $('.create-room').show().next("form .text").hide();
-    $(this).toggleClass("active");
-    $(this).next(".dropdown-options").toggle();
+    $(".dropdown-options").toggle();
   });
   
   $(".create-room").click(function() {
@@ -182,7 +181,9 @@ $(function() {
 	* update user info (status)
 	*/
   socket.on('user-info update', function(data) {
-    var message = "$nickname は $status です。";
+    var message = "$nickname は $full_status です。";
+    
+		$(".dropdown-options").toggle();
 
     // Update dropdown
     if(data.nickname === $('#nickname').text()) {
@@ -192,7 +193,7 @@ $(function() {
       $('.dropdown-status a.selected')
         .removeClass('available away busy');
 
-      $('.dropdown-status a.selected').addClass(data.status).html('<b></b>' + data.status);
+      $('.dropdown-status a.selected').addClass(data.status).html('<b></b>');
     }
 
     // Update users list
@@ -203,7 +204,7 @@ $(function() {
     // Chat notice
     message = message
           .replace('$nickname', data.nickname)
-          .replace('$status', data.status);
+          .replace('$full_status', data.full_status);
 
     // Check update time
     var time = new Date()
@@ -412,12 +413,6 @@ $(function() {
   });
 
 
-  $('.dropdown-status .list a.status').click(function(e) {
-    socket.emit('set status', {
-      status: $(this).data('status')
-    });
-  });
-
 	// timeParser
   var timeParser = function(date) {
     var ints = {
@@ -452,7 +447,7 @@ $(function() {
     }
  
     amount = gap / ints[measure];
-    amount = gap > ints.day ? (Math.round(amount * 100) / 100) : Math.round(amount);
+    amount = gap > ints.day ? Math.floor(amount) : Math.round(amount);
     amount += jpints[measure] + '前';
  
     return amount;

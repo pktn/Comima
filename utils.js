@@ -80,7 +80,7 @@ exports.timeParser = function(date) {
     if (gap > ints[i]) { measure = i; }
   }
   amount = gap / ints[measure];
-  amount = gap > ints.day ? (Math.round(amount * 100) / 100) : Math.round(amount);
+  amount = gap > ints.day ? Math.floor(amount) : Math.round(amount);
   amount += jpints[measure] + '前';
  
   return amount;
@@ -107,6 +107,15 @@ exports.getLogFilePath = function (day) {
 		date.setDate(date.getDate() - 1);
 	}
 	return paths;
+}
+
+exports.getFullStatus = function (status) {
+	 var fullStatus = {
+			available: 'オンライン'
+		, busy: '取り込み中'
+		, away: '退席中'
+	}
+	return fullStatus[status];
 }
 
 exports.getTimestamp = function (date) {
