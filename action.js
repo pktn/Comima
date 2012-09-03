@@ -56,6 +56,7 @@ exports.createRoom = function(req, res, client, roomKey) {
     name: req.body.room_name,
 		detail: req.body.detail, 
     admin: req.body.user_id,
+		color: req.body.room_color,
     locked: 0,
     online: 0,
 		total_visits: 1,

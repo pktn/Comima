@@ -16,6 +16,14 @@ var users = {};
  * my func
  */
 
+exports.setUsers = function (user_id, key, value) {
+	users[user_id][key] = value;
+}
+
+exports.getUsers = function () {
+	return users;
+}
+
 exports.getUserInfo = function (user_id, fn) {
   // get stored user info 
   if (users[user_id]) {
@@ -86,8 +94,6 @@ exports.timeParser = function(date) {
   return amount;
 };
 
-
-
 exports.dumpObject = function (o) {
 	var str = "";
 	for(var i in o) {
@@ -120,9 +126,14 @@ exports.getFullStatus = function (status) {
 
 exports.getTimestamp = function (date) {
 	var d = date || new Date();
-	var timestamp = d.getFullYear().toString()
-		+ (d.getMonth() + 1)
-		+ d.getDate();
-	return timestamp;
+
+	var year = d.getFullYear();
+	var month = d.getMonth() + 1;
+	var date = d.getDate();
+
+	month = (month < 10) ? '0' + month : month;
+	date = (date < 10) ? '0' + date : date;
+
+	return year + month + date;
 }
 

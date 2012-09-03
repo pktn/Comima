@@ -168,6 +168,8 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('set status', function(data) {
     var status = data.status;
+
+		// save DB
     client.hset('users:' + user_id + ':info', 'status', status, function(err, ok) {
       io.sockets.emit('user-info update', {
 				user_id: user_id,
@@ -176,8 +178,14 @@ io.sockets.on('connection', function (socket) {
         full_status: utils.getFullStatus(status)
       });
     });
+
+		// save server session
 		hs.session.status = status;
 		hs.session.save();
+
+		// save server cache
+		utils.setUsers(user_id, 'status', status);
+
   });
 
   socket.on('chat history request', function() {

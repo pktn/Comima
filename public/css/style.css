@@ -18,7 +18,7 @@
   border-radius: 4px;
 }
 #thread-list {
-  height: 580px;
+  height: 540px;
 }
 #thread-list .post-thread {
   float: right;
@@ -127,10 +127,14 @@
 }
 .content .chat {
   float: right;
-  width: 100%;
-  height: 500px;
+  width: 274px;
+  height: 460px;
   z-index: 100;
   overflow-y: scroll;
+  margin: 1px;
+  padding: 1px;
+  border-radius: 4px;
+  border: solid 1px #078;
 }
 .content .chat .notice {
   background: #fcfde6;
@@ -208,17 +212,22 @@
   height: 18px;
   margin-bottom: -4px;
 }
+.content .chat-tools {
+  clear: both;
+}
 .content .chat-input {
   overflow: hidden;
   width: 100%;
-  height: 35px;
+  height: 55px;
   z-index: 500;
   border-top: 1px solid #ccc;
+  text-align: center;
   background-image: -o-linear-gradient(#fdfdfd 4.4%, #dfe2e9);
 }
-.content .chat-input input.text {
-  height: 20px;
+.content .chat-input textarea {
+  height: 40px;
   border-radius: 4px;
+  border-color: #078;
   width: 93%;
   padding: 1% 1% 1% 3%;
   display: block;
@@ -227,7 +236,7 @@
 .content .room {
   float: left;
   width: 100%;
-  height: 535px;
+  height: 540px;
   z-index: 100;
   overflow-y: scroll;
 }
@@ -375,19 +384,28 @@
   height: 20px;
   margin: 0 5px;
 }
-.content .image-box {
-  height: 100%;
-  width: 100%;
+.content .image {
+  display: none;
+}
+.content .image .image-box {
+  height: 390px;
   background: no-repeat transparent center center;
   background-size: contain;
 }
-.content .video-box iframe {
-  height: 315px;
-  width: 420px;
+.content .image .image-info {
+  height: 145px;
+  background-color: #eaf9fd;
 }
-.content .video-box {
-  height: 100%;
-  width: 100%;
+.content .video {
+  display: none;
+}
+.content .video .video-box iframe {
+  height: 390px;
+  width: 640px;
+}
+.content .video .video-info {
+  height: 145px;
+  background-color: #eaf9fd;
 }
 .content .thread {
   float: left;
@@ -1098,7 +1116,6 @@ span.dropdown-users-online {
 }
 .dropdown .selected {
   text-transform: uppercase;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.1) inset, 0 1px 0 rgba(255,255,255,0.1);
   border-radius: 4px;
 }
 .dropdown .selected:hover,

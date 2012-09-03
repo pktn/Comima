@@ -102,8 +102,14 @@ block content
 										スレッド新規作成
 						// .caption
 						.thread
-							.video-box
-							.image-box
+							.video
+								.video-box
+								.video-info
+									| ★youtube 動画の説明
+							.image
+								.image-box
+								.image-info
+									| ★画像の説明
 
 							// thread-content
 						.history
@@ -138,12 +144,11 @@ block content
 						スタンプ
 					// button
 				.chat-input
-					input.text(type='text', name='', value='')
+					textarea.text(type='text', name='', value='')
 				// .chat-input
 
 			// #right-column
 
-			.spacing
 			.spacing
 
 			#online-user-list

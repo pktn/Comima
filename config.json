@@ -43,7 +43,7 @@
 	},
 	"thread": {
 		"maxhistoryline" : 100,
-		"daysgethistory" : 3
+		"daysgethistory" : 30
 	},
 	"status": {
 		"available" : "オンライン",

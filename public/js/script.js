@@ -61,7 +61,6 @@ $(function() {
 	});
 
 	$(".room-box").hover(function(){
-		console.log('sa');
 	});
 
   //Socket.io
@@ -249,14 +248,21 @@ $(function() {
 			updatePost();
     }
 
-		// TODO
-		if (data.msg.match(/^http(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+)\.(?:jpg|gif|png)$/)) { 
+		// TODO check file size
+		var image_regexp = /^http(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+)\.(?:jpg|gif|png)$/;
+		var youtube_regexp = /^http:\/\/(?:www\.|jp\.)?youtube\.com\/watch\?v=([\w\d]+).*$/;
+		var youtube_match = data.msg.match(youtube_regexp);
+
+		if (data.msg.match(image_regexp)) {
+			$('.image').show();
 			$('.image-box').css('background-image', 'url(' + data.msg + ')');
+
+		} else if (youtube_match) {
+			$('.video').show();
+			$('.image').hide();
+			$('.video-box').append('<iframe src="http://www.youtube.com/embed/' + youtube_match[1] + '?autoplay=1" frameborder="0"></iframe>');
 		}
-		/*else {
-			$('.video-box').append('<iframe width="560" height="315" src="http://www.youtube.com/embed/' + yid + '?autoplay=1" frameborder="0"></iframe>');
-		}
-*/
+
 		// delay for stamp message
 		setTimeout(function(){$('.chat').scrollTop($('.chat').prop('scrollHeight'));}, 10);
  
@@ -330,23 +336,32 @@ $(function() {
 	/*
 	* send chat message
 	*/
-  $(".chat-input input").keypress(function(e) {
+  $(".chat-input textarea").keypress(function(e) {
     var inputText = $(this).val().trim();
-    if(e.which == 13 && inputText) {
-      var chunks = inputText.match(/.{1,1024}/g)
-        , len = chunks.length;
-      for(var i = 0; i<len; i++) {
-        socket.emit('my msg', {
-					image_url: $('#image_url').text(),
-					color: $(".chat-input input").css('color'),
-					bgcolor: $(".chat-input input").css('background-color'),
-          msg: chunks[i]
-        });
-      }
-      $(this).val('');
 
-      return false;
-    }
+		// Enter
+		if (e.which == 13) {
+			if (!inputText) {
+				return false;
+
+			// Shift+Enter
+			} else if (e.shiftKey) {
+					$(this).val(inputText + '\n');
+				} else {
+		      var chunks = inputText.match(/.{1,1024}/g)
+    		    , len = chunks.length;
+		      for(var i = 0; i<len; i++) {
+    		    socket.emit('my msg', {
+							image_url: $('#image_url').text(),
+							color: $(".chat-input input").css('color'),
+							bgcolor: $(".chat-input input").css('background-color'),
+  		        msg: chunks[i]
+    		    });
+					}
+	      	$(this).val('');
+				}
+				return false;
+			}
   });
 
 	/*
