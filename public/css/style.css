@@ -513,6 +513,9 @@
   display: block;
   margin: 1% 1.5%;
 }
+.image-picker {
+  background-color: #fff;
+}
 .posting-thread {
   background: url("../img/loading.gif") center left no-repeat;
   margin: auto;
@@ -1118,8 +1121,6 @@ span.dropdown-users-online {
   text-transform: uppercase;
   border-radius: 4px;
 }
-.dropdown .selected:hover,
-.dropdown .selected.active,
 .dropdown .dropdown-options {
   border-radius: 4px;
   position: absolute;

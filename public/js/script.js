@@ -255,7 +255,7 @@ $(function() {
 
 		if (data.msg.match(image_regexp)) {
 			$('.image').show();
-			$('.image-box').css('background-image', 'url(' + data.msg + ')');
+			$('#left-column .image-box').css('background-image', 'url(' + data.msg + ')');
 
 		} else if (youtube_match) {
 			$('.video').show();
